@@ -1,0 +1,104 @@
+.game-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  padding: 12px;
+}
+
+.controls-row {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.control-btn {
+  padding: 8px 16px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #ccc;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: inherit;
+}
+
+.control-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+
+.control-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.clear-btn:hover:not(:disabled) {
+  border-color: #c44;
+  color: #f88;
+}
+
+.double-btn:hover:not(:disabled) {
+  border-color: #4c4;
+  color: #8f8;
+}
+
+.toggle-btn {
+  min-width: 90px;
+}
+
+.toggle-btn.bets-on {
+  border-color: #4c4;
+  color: #8f8;
+}
+
+.toggle-btn.bets-off {
+  border-color: #c44;
+  color: #f88;
+}
+
+.roll-btn {
+  padding: 16px 48px;
+  border: 3px solid #ffd700;
+  border-radius: 50px;
+  background: linear-gradient(180deg, #228b22 0%, #1a6b1a 100%);
+  color: #fff;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  text-transform: uppercase;
+  font-family: inherit;
+}
+
+.roll-btn:hover:not(:disabled) {
+  background: linear-gradient(180deg, #2aad2a 0%, #228b22 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5);
+}
+
+.roll-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.roll-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  border-color: #888;
+}
+
+.reset-btn {
+  font-size: 11px;
+  padding: 6px 12px;
+}
+
+.reset-btn:hover:not(:disabled) {
+  border-color: #cc8800;
+  color: #ffaa00;
+}

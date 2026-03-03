@@ -1,0 +1,137 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --bg-color: #0a0f0a;
+  --text-color: #e0e0e0;
+}
+
+body {
+  background: var(--bg-color);
+  color: var(--text-color);
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-header {
+  text-align: center;
+  padding: 16px;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.6) 0%, transparent 100%);
+}
+
+.app-title {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: 4px;
+  color: #ffd700;
+  text-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+}
+
+.app-main {
+  flex: 1;
+  padding: 0 16px 24px;
+}
+
+.game-layout {
+  display: flex;
+  gap: 16px;
+  max-width: 1400px;
+  margin: 0 auto;
+  justify-content: center;
+}
+
+.sidebar {
+  flex-shrink: 0;
+  min-width: 140px;
+  max-width: 200px;
+}
+
+.game-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  max-width: 950px;
+}
+
+.dice-area {
+  display: flex;
+  justify-content: center;
+}
+
+.roll-area {
+  display: flex;
+  justify-content: center;
+}
+
+.main-roll-btn {
+  padding: 14px 56px;
+  border: 3px solid #ffd700;
+  border-radius: 50px;
+  background: linear-gradient(180deg, #228b22 0%, #1a6b1a 100%);
+  color: #fff;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5), 0 0 20px rgba(34, 139, 34, 0.2);
+  text-transform: uppercase;
+  font-family: inherit;
+}
+
+.main-roll-btn:hover:not(:disabled) {
+  background: linear-gradient(180deg, #2aad2a 0%, #228b22 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5), 0 0 30px rgba(34, 139, 34, 0.3);
+}
+
+.main-roll-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.main-roll-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  border-color: #666;
+}
+
+/* Responsive */
+@media (max-width: 1100px) {
+  .game-layout {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .sidebar {
+    display: flex;
+    flex-direction: row;
+    max-width: 100%;
+    width: 100%;
+    gap: 8px;
+    justify-content: center;
+  }
+
+  .sidebar-left {
+    order: 2;
+  }
+
+  .game-center {
+    order: 1;
+  }
+
+  .sidebar-right {
+    order: 3;
+  }
+}

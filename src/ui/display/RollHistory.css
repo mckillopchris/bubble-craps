@@ -1,0 +1,67 @@
+.roll-history {
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 12px;
+  min-width: 120px;
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.history-header {
+  font-size: 10px;
+  font-weight: 600;
+  color: #888;
+  letter-spacing: 1px;
+  text-align: center;
+  margin-bottom: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.history-empty {
+  font-size: 12px;
+  color: #555;
+  text-align: center;
+  padding: 20px 0;
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.history-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 8px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.03);
+  font-size: 13px;
+}
+
+.history-latest {
+  background: rgba(255, 255, 255, 0.08);
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.history-total {
+  font-weight: 700;
+  min-width: 24px;
+  text-align: center;
+}
+
+.history-dice {
+  font-size: 11px;
+  opacity: 0.6;
+}
+
+.hard-indicator {
+  color: #ff5252;
+  font-weight: 700;
+  margin-left: 2px;
+  font-size: 9px;
+}

@@ -1,0 +1,225 @@
+.craps-table {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px;
+  background: #0d5a1e;
+  border-radius: 16px;
+  border: 4px solid #8b6914;
+  box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.3);
+  max-width: 900px;
+  margin: 0 auto;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+}
+
+.table-section {
+  display: flex;
+  gap: 4px;
+}
+
+/* Point numbers row */
+.point-numbers {
+  justify-content: center;
+}
+
+.point-column {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 80px;
+}
+
+.point-header {
+  background: #1a7a2e;
+  border: 2px solid #2a8a3e;
+  border-radius: 6px 6px 0 0;
+  padding: 8px 4px;
+  text-align: center;
+  position: relative;
+}
+
+.point-number {
+  font-size: 24px;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.puck {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  font-weight: 700;
+  z-index: 10;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+}
+
+.puck-on {
+  background: #ffffff;
+  color: #000;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
+}
+
+.puck-off {
+  background: #222;
+  color: #fff;
+}
+
+/* Bet areas */
+.bet-area {
+  position: relative;
+  padding: 10px 8px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+  font-family: inherit;
+}
+
+.bet-area:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: translateY(-1px);
+}
+
+.bet-area:active {
+  transform: translateY(0);
+}
+
+.bet-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.bet-chip {
+  display: inline-block;
+  margin-top: 4px;
+  padding: 2px 8px;
+  background: #e6b800;
+  color: #000;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 700;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+/* Main bets */
+.main-bets {
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.pass-line {
+  flex: 1;
+  min-width: 120px;
+  background: rgba(34, 139, 34, 0.3);
+  border-color: #2a8a3e;
+}
+
+.dont-pass {
+  flex: 1;
+  min-width: 120px;
+  background: rgba(139, 34, 34, 0.3);
+  border-color: #8a2a2a;
+}
+
+.pass-odds,
+.dont-pass-odds {
+  flex: 0.7;
+  min-width: 80px;
+}
+
+.come-bet {
+  flex: 1;
+  min-width: 100px;
+  background: rgba(34, 100, 139, 0.3);
+  border-color: #2a6a8a;
+}
+
+.dont-come {
+  flex: 1;
+  min-width: 100px;
+  background: rgba(139, 80, 34, 0.3);
+  border-color: #8a5a2a;
+}
+
+.field-bet {
+  flex: 2;
+  min-width: 200px;
+  background: rgba(100, 34, 139, 0.2);
+  border-color: #6a2a8a;
+}
+
+.field-numbers {
+  display: block;
+  font-size: 10px;
+  opacity: 0.7;
+  margin-top: 2px;
+  letter-spacing: 2px;
+}
+
+/* Proposition bets */
+.prop-bets {
+  flex-direction: column;
+  gap: 4px;
+}
+
+.prop-row {
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+}
+
+.hard-way {
+  min-width: 70px;
+  background: rgba(200, 50, 50, 0.2);
+  border-color: rgba(200, 100, 100, 0.4);
+}
+
+.prop-c,
+.prop-e,
+.prop-ce,
+.prop-seven,
+.prop-any-craps {
+  min-width: 60px;
+}
+
+.prop-seven {
+  background: rgba(200, 0, 0, 0.3);
+  border-color: #c00;
+}
+
+.horn-bet {
+  min-width: 55px;
+}
+
+.big-bet {
+  min-width: 70px;
+}
+
+/* Place/Buy/Lay bets */
+.place-bet {
+  background: rgba(34, 139, 100, 0.2);
+}
+
+.buy-bet {
+  background: rgba(139, 139, 34, 0.2);
+}
+
+.lay-bet {
+  background: rgba(100, 34, 139, 0.2);
+}
