@@ -1,0 +1,156 @@
+.help-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.help-modal {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border: 2px solid #ffd700;
+  border-radius: 16px;
+  max-width: 700px;
+  width: 100%;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.help-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+}
+
+.help-header h2 {
+  font-size: 18px;
+  color: #ffd700;
+  letter-spacing: 2px;
+}
+
+.help-close {
+  background: none;
+  border: none;
+  color: #aaa;
+  font-size: 28px;
+  cursor: pointer;
+  padding: 0 4px;
+  line-height: 1;
+  transition: color 0.2s;
+}
+
+.help-close:hover {
+  color: #fff;
+}
+
+.help-content {
+  padding: 16px 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.help-intro {
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  border-left: 3px solid #ffd700;
+}
+
+.help-intro h3 {
+  font-size: 13px;
+  color: #ffd700;
+  margin-bottom: 6px;
+  letter-spacing: 1px;
+}
+
+.help-intro p {
+  font-size: 12px;
+  color: #ccc;
+  line-height: 1.6;
+}
+
+.help-section h3 {
+  font-size: 13px;
+  color: #4caf50;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-bottom: 1px solid rgba(76, 175, 80, 0.2);
+  padding-bottom: 4px;
+}
+
+.help-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+}
+
+.help-table th {
+  text-align: left;
+  padding: 4px 8px;
+  color: #888;
+  font-weight: normal;
+  text-transform: uppercase;
+  font-size: 10px;
+  letter-spacing: 0.5px;
+}
+
+.help-table td {
+  padding: 5px 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.help-bet-name {
+  color: #fff;
+  font-weight: bold;
+  white-space: nowrap;
+  min-width: 90px;
+}
+
+.help-bet-desc {
+  color: #aaa;
+  line-height: 1.4;
+}
+
+.help-bet-payout {
+  color: #ffd700;
+  font-weight: bold;
+  white-space: nowrap;
+  text-align: right;
+}
+
+/* Scrollbar styling */
+.help-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.help-content::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 3px;
+}
+
+.help-content::-webkit-scrollbar-thumb {
+  background: rgba(255, 215, 0, 0.3);
+  border-radius: 3px;
+}
+
+@media (max-width: 600px) {
+  .help-modal {
+    max-height: 90vh;
+  }
+  .help-table {
+    font-size: 10px;
+  }
+}

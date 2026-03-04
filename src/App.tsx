@@ -2,7 +2,7 @@
 // Bubble Craps - Main Application
 // ============================================================
 
-import { useRef, useCallback } from 'react';
+import { useRef, useCallback, useState, useEffect } from 'react';
 import DiceRoller, { type DiceRollerRef } from './dice/DiceRoller';
 import CrapsTable from './ui/table/CrapsTable';
 import ChipRack from './ui/chips/ChipRack';
@@ -14,7 +14,10 @@ import RollHistory from './ui/display/RollHistory';
 import LastRollResult from './ui/display/LastRollResult';
 import LuckyShooter from './ui/sidebets/LuckyShooter';
 import LuckyRoller from './ui/sidebets/LuckyRoller';
+import HelpRules from './ui/modals/HelpRules';
+import SettingsMenu from './ui/modals/SettingsMenu';
 import { useGameStore } from './store/gameStore';
+import { soundManager } from './audio/SoundManager';
 import type { DiceOutcome } from './engine/types';
 import './App.css';
 
@@ -23,15 +26,32 @@ export default function App() {
   const completeRoll = useGameStore((s) => s.completeRoll);
   const startRoll = useGameStore((s) => s.startRoll);
   const isRolling = useGameStore((s) => s.isRolling);
+  const lastWin = useGameStore((s) => s.lastWin);
+  const prevLastWin = useRef(0);
+
+  const [showHelp, setShowHelp] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
+
+  // Play win/lose sound after roll completes
+  useEffect(() => {
+    if (!isRolling && prevLastWin.current !== lastWin) {
+      if (lastWin > 0) {
+        soundManager.play('winChime');
+      }
+      prevLastWin.current = lastWin;
+    }
+  }, [isRolling, lastWin]);
 
   const handleRollComplete = useCallback(
     (outcome: DiceOutcome) => {
+      soundManager.play('diceSettle');
       completeRoll(outcome);
     },
     [completeRoll]
   );
 
   const handleRollClick = useCallback(() => {
+    soundManager.play('diceRattle');
     startRoll();
     diceRollerRef.current?.roll();
   }, [startRoll]);
@@ -43,6 +63,10 @@ export default function App() {
     <div className="app">
       <header className="app-header">
         <h1 className="app-title">BUBBLE CRAPS</h1>
+        <div className="header-buttons">
+          <button className="header-btn" onClick={() => setShowHelp(true)} title="Help & Rules">?</button>
+          <button className="header-btn" onClick={() => setShowSettings(true)} title="Settings">&#9881;</button>
+        </div>
       </header>
 
       <main className="app-main">
@@ -102,6 +126,10 @@ export default function App() {
           </aside>
         </div>
       </main>
+
+      {/* Modals */}
+      {showHelp && <HelpRules onClose={() => setShowHelp(false)} />}
+      {showSettings && <SettingsMenu onClose={() => setShowSettings(false)} />}
     </div>
   );
 }

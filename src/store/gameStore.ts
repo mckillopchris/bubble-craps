@@ -38,7 +38,17 @@ interface GameStore extends GameState {
   lastResolutions: BetResolution[];
   bettingTimer: number | null; // seconds remaining, null = no timer
 
+  // Settings
+  showWinnings: boolean;
+  showHints: boolean;
+  showBetLimits: boolean;
+  soundEnabled: boolean;
+
   // Actions
+  setShowWinnings: (show: boolean) => void;
+  setShowHints: (show: boolean) => void;
+  setShowBetLimits: (show: boolean) => void;
+  setSoundEnabled: (enabled: boolean) => void;
   setSelectedChip: (value: number) => void;
   placeBet: (type: BetType, amount?: number, pointNumber?: PointNumber, hardWayTotal?: 4 | 6 | 8 | 10, diceCombination?: DiceCombination) => boolean;
   removeBet: (betId: string) => void;
@@ -65,6 +75,17 @@ export const useGameStore = create<GameStore>((set, get) => ({
   isRolling: false,
   lastResolutions: [],
   bettingTimer: null,
+
+  // Settings defaults
+  showWinnings: false,
+  showHints: true,
+  showBetLimits: false,
+  soundEnabled: true,
+
+  setShowWinnings: (show) => set({ showWinnings: show }),
+  setShowHints: (show) => set({ showHints: show }),
+  setShowBetLimits: (show) => set({ showBetLimits: show }),
+  setSoundEnabled: (enabled) => set({ soundEnabled: enabled }),
 
   setSelectedChip: (value) => set({ selectedChipValue: value }),
 
