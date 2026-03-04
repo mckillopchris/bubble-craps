@@ -27,11 +27,16 @@ import { resolveAllBets } from '../engine/resolver';
 import { validateBetPlacement } from '../engine/validator';
 import { calculateCommission, isContractBet, isSingleRollBet, TOGGLABLE_BETS } from '../engine/bets';
 
+const INSIDE_NUMBERS: PointNumber[] = [5, 6, 8, 9];
+const OUTSIDE_NUMBERS: PointNumber[] = [4, 5, 9, 10];
+const ALL_POINT_NUMBERS: PointNumber[] = [4, 5, 6, 8, 9, 10];
+
 interface GameStore extends GameState {
   // UI state
   selectedChipValue: number;
   isRolling: boolean;
   lastResolutions: BetResolution[];
+  bettingTimer: number | null; // seconds remaining, null = no timer
 
   // Actions
   setSelectedChip: (value: number) => void;
@@ -41,10 +46,16 @@ interface GameStore extends GameState {
   clearAllBets: () => void;
   doubleBets: () => void;
   repeatLastBet: () => void;
+  pressLastPoint: () => void;
+  placeBetsAcross: () => void;
+  placeBetsInside: () => void;
+  placeBetsOutside: () => void;
   toggleBetsOnOff: () => void;
   startRoll: () => void;
   completeRoll: (outcome: DiceOutcome) => void;
   resetGame: () => void;
+  setBettingTimer: (seconds: number | null) => void;
+  tickBettingTimer: () => void;
 }
 
 export const useGameStore = create<GameStore>((set, get) => ({
@@ -53,6 +64,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
   selectedChipValue: 5,
   isRolling: false,
   lastResolutions: [],
+  bettingTimer: null,
 
   setSelectedChip: (value) => set({ selectedChipValue: value }),
 
@@ -192,6 +204,66 @@ export const useGameStore = create<GameStore>((set, get) => ({
     }
   },
 
+  pressLastPoint: () => {
+    const state = get();
+    if (state.isRolling || !state.point) return;
+
+    // Find existing Place bet on the current point and double it
+    const placeBet = state.bets.find(
+      (b) => b.type === BetType.Place && b.pointNumber === state.point
+    );
+
+    if (!placeBet) {
+      // No Place bet on point - place one at selected chip value
+      get().placeBet(BetType.Place, state.selectedChipValue, state.point);
+      return;
+    }
+
+    // Double the existing Place bet
+    if (placeBet.amount > state.credits) {
+      console.warn('Insufficient credits to press');
+      return;
+    }
+
+    set((s) => ({
+      bets: s.bets.map((b) =>
+        b.id === placeBet.id ? { ...b, amount: b.amount * 2 } : b
+      ),
+      credits: s.credits - placeBet.amount,
+    }));
+  },
+
+  placeBetsAcross: () => {
+    const state = get();
+    if (state.isRolling) return;
+    const numbers = ALL_POINT_NUMBERS.filter((n) => n !== state.point);
+    for (const num of numbers) {
+      // Skip if already have a Place bet on this number
+      if (state.bets.some((b) => b.type === BetType.Place && b.pointNumber === num)) continue;
+      get().placeBet(BetType.Place, state.selectedChipValue, num);
+    }
+  },
+
+  placeBetsInside: () => {
+    const state = get();
+    if (state.isRolling) return;
+    const numbers = INSIDE_NUMBERS.filter((n) => n !== state.point);
+    for (const num of numbers) {
+      if (state.bets.some((b) => b.type === BetType.Place && b.pointNumber === num)) continue;
+      get().placeBet(BetType.Place, state.selectedChipValue, num);
+    }
+  },
+
+  placeBetsOutside: () => {
+    const state = get();
+    if (state.isRolling) return;
+    const numbers = OUTSIDE_NUMBERS.filter((n) => n !== state.point);
+    for (const num of numbers) {
+      if (state.bets.some((b) => b.type === BetType.Place && b.pointNumber === num)) continue;
+      get().placeBet(BetType.Place, state.selectedChipValue, num);
+    }
+  },
+
   toggleBetsOnOff: () => {
     set((s) => {
       const newBetsOn = !s.betsOn;
@@ -298,6 +370,16 @@ export const useGameStore = create<GameStore>((set, get) => ({
       selectedChipValue: 5,
       isRolling: false,
       lastResolutions: [],
+      bettingTimer: null,
+    });
+  },
+
+  setBettingTimer: (seconds) => set({ bettingTimer: seconds }),
+
+  tickBettingTimer: () => {
+    set((s) => {
+      if (s.bettingTimer === null || s.bettingTimer <= 0) return { bettingTimer: null };
+      return { bettingTimer: s.bettingTimer - 1 };
     });
   },
 }));

@@ -1,0 +1,67 @@
+.betting-timer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 16px;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  min-width: 200px;
+}
+
+.timer-bar {
+  flex: 1;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.timer-fill {
+  height: 100%;
+  background: #4caf50;
+  border-radius: 3px;
+  transition: width 1s linear;
+}
+
+.timer-low .timer-fill {
+  background: #f44336;
+  animation: timerPulse 0.5s ease-in-out infinite;
+}
+
+@keyframes timerPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+.timer-text {
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+  min-width: 32px;
+  text-align: center;
+}
+
+.timer-low .timer-text {
+  color: #f44336;
+}
+
+.timer-warning {
+  font-size: 11px;
+  font-weight: 600;
+  color: #ffd700;
+  letter-spacing: 0.5px;
+  animation: blink 1s ease-in-out infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.timer-invalid {
+  font-size: 11px;
+  font-weight: 700;
+  color: #f44336;
+  letter-spacing: 0.5px;
+}
