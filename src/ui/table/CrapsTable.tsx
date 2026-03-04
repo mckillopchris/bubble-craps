@@ -1,23 +1,46 @@
 // ============================================================
-// Craps Table Layout - SVG-based betting surface
+// Craps Table Layout - Full betting surface with modals
 // ============================================================
 
-import { useCallback } from 'react';
-import { BetType, type PointNumber, type DiceCombination } from '../../engine/types';
+import { useCallback, useState } from 'react';
+import { BetType, GamePhase, type PointNumber, type DiceCombination } from '../../engine/types';
 import { useGameStore } from '../../store/gameStore';
+import OddsPopup from '../modals/OddsPopup';
+import CommissionConfirm from '../modals/CommissionConfirm';
 import './CrapsTable.css';
 
 const POINT_NUMBERS: PointNumber[] = [4, 5, 6, 8, 9, 10];
+
+interface PendingCommission {
+  betType: BetType.Buy | BetType.Lay;
+  pointNumber: PointNumber;
+  amount: number;
+}
 
 export default function CrapsTable() {
   const placeBet = useGameStore((s) => s.placeBet);
   const bets = useGameStore((s) => s.bets);
   const point = useGameStore((s) => s.point);
+  const phase = useGameStore((s) => s.phase);
   const selectedChipValue = useGameStore((s) => s.selectedChipValue);
+  const comePoints = useGameStore((s) => s.comePoints);
+  const dontComePoints = useGameStore((s) => s.dontComePoints);
+  const rollsSinceHardWay = useGameStore((s) => s.rollsSinceHardWay);
+
+  // Modal state
+  const [oddsPopup, setOddsPopup] = useState<{ betType: 'pass' | 'dontPass'; baseBetAmount: number } | null>(null);
+  const [pendingCommission, setPendingCommission] = useState<PendingCommission | null>(null);
 
   const handleBetClick = useCallback(
-    (type: BetType, pointNumber?: PointNumber, hardWayTotal?: 4 | 6 | 8 | 10, diceCombination?: DiceCombination) => {
-      placeBet(type, selectedChipValue, pointNumber, hardWayTotal, diceCombination);
+    (type: BetType, pointNumber?: PointNumber, hardWayTotal?: 4 | 6 | 8 | 10, _diceCombination?: DiceCombination) => {
+      // Intercept Buy/Lay bets to show commission confirmation
+      if (type === BetType.Buy || type === BetType.Lay) {
+        if (pointNumber) {
+          setPendingCommission({ betType: type as BetType.Buy | BetType.Lay, pointNumber, amount: selectedChipValue });
+        }
+        return;
+      }
+      placeBet(type, selectedChipValue, pointNumber, hardWayTotal);
     },
     [placeBet, selectedChipValue]
   );
@@ -33,54 +56,81 @@ export default function CrapsTable() {
       .reduce((sum, b) => sum + b.amount, 0);
   };
 
+  // Check if player has Pass Line / Don't Pass bet for odds popup trigger
+  const passLineBet = bets.find((b) => b.type === BetType.PassLine);
+  const dontPassBet = bets.find((b) => b.type === BetType.DontPass);
+  const hasPassOdds = bets.some((b) => b.type === BetType.PassLineOdds);
+  const hasDontPassOdds = bets.some((b) => b.type === BetType.DontPassOdds);
+
   return (
     <div className="craps-table">
       {/* Point numbers row */}
       <div className="table-section point-numbers">
-        {POINT_NUMBERS.map((num) => (
-          <div key={num} className="point-column">
-            <div className="point-header">
-              {point === num && <div className="puck puck-on">ON</div>}
-              <span className="point-number">{num}</span>
+        {POINT_NUMBERS.map((num) => {
+          const comeTotal = bets
+            .filter((b) => b.type === BetType.Come && comePoints.get(b.id) === num)
+            .reduce((s, b) => s + b.amount, 0);
+          const dontComeTotal = bets
+            .filter((b) => b.type === BetType.DontCome && dontComePoints.get(b.id) === num)
+            .reduce((s, b) => s + b.amount, 0);
+
+          return (
+            <div key={num} className="point-column">
+              <div className={`point-header ${point === num ? 'point-active' : ''}`}>
+                {point === num && <div className="puck puck-on">ON</div>}
+                <span className="point-number">{num}</span>
+              </div>
+
+              {/* Come/Don't Come point indicators */}
+              {(comeTotal > 0 || dontComeTotal > 0) && (
+                <div className="come-point-indicators">
+                  {comeTotal > 0 && (
+                    <div className="come-point-chip come">C ${comeTotal}</div>
+                  )}
+                  {dontComeTotal > 0 && (
+                    <div className="come-point-chip dc">DC ${dontComeTotal}</div>
+                  )}
+                </div>
+              )}
+
+              {/* Place bet area */}
+              <button
+                className="bet-area place-bet"
+                onClick={() => handleBetClick(BetType.Place, num)}
+                title={`Place ${num}`}
+              >
+                <span className="bet-label">PLACE</span>
+                {getBetTotal(BetType.Place, num) > 0 && (
+                  <span className="bet-chip">${getBetTotal(BetType.Place, num)}</span>
+                )}
+              </button>
+
+              {/* Buy bet area */}
+              <button
+                className="bet-area buy-bet"
+                onClick={() => handleBetClick(BetType.Buy, num)}
+                title={`Buy ${num}`}
+              >
+                <span className="bet-label">BUY</span>
+                {getBetTotal(BetType.Buy, num) > 0 && (
+                  <span className="bet-chip">${getBetTotal(BetType.Buy, num)}</span>
+                )}
+              </button>
+
+              {/* Lay bet area */}
+              <button
+                className="bet-area lay-bet"
+                onClick={() => handleBetClick(BetType.Lay, num)}
+                title={`Lay ${num}`}
+              >
+                <span className="bet-label">LAY</span>
+                {getBetTotal(BetType.Lay, num) > 0 && (
+                  <span className="bet-chip">${getBetTotal(BetType.Lay, num)}</span>
+                )}
+              </button>
             </div>
-
-            {/* Place bet area */}
-            <button
-              className="bet-area place-bet"
-              onClick={() => handleBetClick(BetType.Place, num)}
-              title={`Place ${num}`}
-            >
-              <span className="bet-label">PLACE</span>
-              {getBetTotal(BetType.Place, num) > 0 && (
-                <span className="bet-chip">${getBetTotal(BetType.Place, num)}</span>
-              )}
-            </button>
-
-            {/* Buy bet area */}
-            <button
-              className="bet-area buy-bet"
-              onClick={() => handleBetClick(BetType.Buy, num)}
-              title={`Buy ${num}`}
-            >
-              <span className="bet-label">BUY</span>
-              {getBetTotal(BetType.Buy, num) > 0 && (
-                <span className="bet-chip">${getBetTotal(BetType.Buy, num)}</span>
-              )}
-            </button>
-
-            {/* Lay bet area */}
-            <button
-              className="bet-area lay-bet"
-              onClick={() => handleBetClick(BetType.Lay, num)}
-              title={`Lay ${num}`}
-            >
-              <span className="bet-label">LAY</span>
-              {getBetTotal(BetType.Lay, num) > 0 && (
-                <span className="bet-chip">${getBetTotal(BetType.Lay, num)}</span>
-              )}
-            </button>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* Main betting area */}
@@ -111,8 +161,14 @@ export default function CrapsTable() {
 
         {/* Pass Line Odds */}
         <button
-          className="bet-area pass-odds"
-          onClick={() => handleBetClick(BetType.PassLineOdds)}
+          className={`bet-area pass-odds ${phase === GamePhase.Point && passLineBet && !hasPassOdds ? 'odds-available' : ''}`}
+          onClick={() => {
+            if (phase === GamePhase.Point && passLineBet && !hasPassOdds && point) {
+              setOddsPopup({ betType: 'pass', baseBetAmount: passLineBet.amount });
+            } else {
+              handleBetClick(BetType.PassLineOdds);
+            }
+          }}
           title="Pass Line Odds"
         >
           <span className="bet-label">ODDS</span>
@@ -123,8 +179,14 @@ export default function CrapsTable() {
 
         {/* Don't Pass Odds */}
         <button
-          className="bet-area dont-pass-odds"
-          onClick={() => handleBetClick(BetType.DontPassOdds)}
+          className={`bet-area dont-pass-odds ${phase === GamePhase.Point && dontPassBet && !hasDontPassOdds ? 'odds-available' : ''}`}
+          onClick={() => {
+            if (phase === GamePhase.Point && dontPassBet && !hasDontPassOdds && point) {
+              setOddsPopup({ betType: 'dontPass', baseBetAmount: dontPassBet.amount });
+            } else {
+              handleBetClick(BetType.DontPassOdds);
+            }
+          }}
           title="Don't Pass Odds"
         >
           <span className="bet-label">DP ODDS</span>
@@ -174,7 +236,7 @@ export default function CrapsTable() {
       {/* Center proposition bets */}
       <div className="table-section prop-bets">
         <div className="prop-row">
-          {/* Hard Ways */}
+          {/* Hard Ways with roll counters */}
           {([4, 6, 8, 10] as const).map((hw) => (
             <button
               key={`hw-${hw}`}
@@ -183,6 +245,7 @@ export default function CrapsTable() {
               title={`Hard ${hw}`}
             >
               <span className="bet-label">HARD {hw}</span>
+              <span className="hw-counter">{rollsSinceHardWay[hw]} rolls</span>
               {getBetTotal(BetType.HardWay, undefined, hw) > 0 && (
                 <span className="bet-chip">${getBetTotal(BetType.HardWay, undefined, hw)}</span>
               )}
@@ -191,7 +254,6 @@ export default function CrapsTable() {
         </div>
 
         <div className="prop-row">
-          {/* C, E, C&E */}
           <button className="bet-area prop-c" onClick={() => handleBetClick(BetType.Craps)} title="Craps (C)">
             <span className="bet-label">C</span>
             {getBetTotal(BetType.Craps) > 0 && <span className="bet-chip">${getBetTotal(BetType.Craps)}</span>}
@@ -204,14 +266,10 @@ export default function CrapsTable() {
             <span className="bet-label">C&E</span>
             {getBetTotal(BetType.CrapsEleven) > 0 && <span className="bet-chip">${getBetTotal(BetType.CrapsEleven)}</span>}
           </button>
-
-          {/* Seven */}
           <button className="bet-area prop-seven" onClick={() => handleBetClick(BetType.Seven)} title="Seven">
             <span className="bet-label">7</span>
             {getBetTotal(BetType.Seven) > 0 && <span className="bet-chip">${getBetTotal(BetType.Seven)}</span>}
           </button>
-
-          {/* Any Craps */}
           <button className="bet-area prop-any-craps" onClick={() => handleBetClick(BetType.AnyCraps)} title="Any Craps">
             <span className="bet-label">ANY CRAPS</span>
             {getBetTotal(BetType.AnyCraps) > 0 && <span className="bet-chip">${getBetTotal(BetType.AnyCraps)}</span>}
@@ -219,7 +277,6 @@ export default function CrapsTable() {
         </div>
 
         <div className="prop-row">
-          {/* Horn bets */}
           {([
             [BetType.Horn2, '2', 'Snake Eyes'],
             [BetType.Horn3, '3', 'Ace-Deuce'],
@@ -240,7 +297,6 @@ export default function CrapsTable() {
         </div>
 
         <div className="prop-row">
-          {/* Big 6 / Big 8 */}
           <button className="bet-area big-bet" onClick={() => handleBetClick(BetType.Big6)} title="Big 6">
             <span className="bet-label">BIG 6</span>
             {getBetTotal(BetType.Big6) > 0 && <span className="bet-chip">${getBetTotal(BetType.Big6)}</span>}
@@ -251,6 +307,25 @@ export default function CrapsTable() {
           </button>
         </div>
       </div>
+
+      {/* Modals */}
+      {oddsPopup && point && (
+        <OddsPopup
+          betType={oddsPopup.betType}
+          point={point}
+          baseBetAmount={oddsPopup.baseBetAmount}
+          onClose={() => setOddsPopup(null)}
+        />
+      )}
+
+      {pendingCommission && (
+        <CommissionConfirm
+          betType={pendingCommission.betType}
+          pointNumber={pendingCommission.pointNumber}
+          amount={pendingCommission.amount}
+          onClose={() => setPendingCommission(null)}
+        />
+      )}
     </div>
   );
 }

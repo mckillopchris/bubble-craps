@@ -1,0 +1,101 @@
+.commission-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease;
+}
+
+.commission-popup {
+  background: linear-gradient(180deg, #2a1a0d 0%, #1a0d00 100%);
+  border: 2px solid #cc8800;
+  border-radius: 16px;
+  padding: 24px;
+  min-width: 300px;
+  max-width: 380px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8), 0 0 20px rgba(204, 136, 0, 0.1);
+  animation: slideUp 0.2s ease;
+}
+
+.commission-title {
+  text-align: center;
+  color: #cc8800;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  margin-bottom: 16px;
+}
+
+.commission-details {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 20px;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+}
+
+.commission-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  color: #ccc;
+}
+
+.commission-row strong {
+  color: #fff;
+}
+
+.commission-amount {
+  color: #cc8800 !important;
+}
+
+.commission-win {
+  color: #4caf50 !important;
+}
+
+.commission-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.commission-btn {
+  flex: 1;
+  padding: 12px;
+  border: 2px solid;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: inherit;
+  letter-spacing: 0.5px;
+}
+
+.commission-btn.confirm {
+  background: linear-gradient(180deg, #cc8800 0%, #996600 100%);
+  border-color: #cc8800;
+  color: #fff;
+}
+
+.commission-btn.confirm:hover {
+  background: linear-gradient(180deg, #dd9900 0%, #cc8800 100%);
+}
+
+.commission-btn.cancel {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #aaa;
+}
+
+.commission-btn.cancel:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
