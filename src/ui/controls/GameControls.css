@@ -47,6 +47,11 @@
   color: #8f8;
 }
 
+.repeat-btn:hover:not(:disabled) {
+  border-color: #4488cc;
+  color: #88bbff;
+}
+
 .toggle-btn {
   min-width: 90px;
 }

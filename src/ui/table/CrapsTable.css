@@ -36,6 +36,13 @@
   padding: 8px 4px;
   text-align: center;
   position: relative;
+  transition: all 0.3s ease;
+}
+
+.point-header.point-active {
+  background: #2a9a3e;
+  border-color: #ffd700;
+  box-shadow: 0 0 12px rgba(255, 215, 0, 0.3);
 }
 
 .point-number {
@@ -71,6 +78,36 @@
 .puck-off {
   background: #222;
   color: #fff;
+}
+
+/* Come/Don't Come point indicators */
+.come-point-indicators {
+  display: flex;
+  gap: 3px;
+  justify-content: center;
+  padding: 3px 2px;
+}
+
+.come-point-chip {
+  padding: 2px 6px;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.come-point-chip.come {
+  background: #2266aa;
+  color: #fff;
+  border: 1px solid #4488cc;
+  box-shadow: 0 0 6px rgba(34, 102, 170, 0.4);
+}
+
+.come-point-chip.dc {
+  background: #aa6622;
+  color: #fff;
+  border: 1px solid #cc8844;
+  box-shadow: 0 0 6px rgba(170, 102, 34, 0.4);
 }
 
 /* Bet areas */
@@ -115,6 +152,18 @@
   font-size: 11px;
   font-weight: 700;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+/* Odds available glow */
+.odds-available {
+  border-color: #ffd700;
+  background: rgba(255, 215, 0, 0.15);
+  animation: oddsGlow 1.5s ease-in-out infinite;
+}
+
+@keyframes oddsGlow {
+  0%, 100% { box-shadow: 0 0 4px rgba(255, 215, 0, 0.2); }
+  50% { box-shadow: 0 0 12px rgba(255, 215, 0, 0.5); }
 }
 
 /* Main bets */
@@ -188,6 +237,13 @@
   min-width: 70px;
   background: rgba(200, 50, 50, 0.2);
   border-color: rgba(200, 100, 100, 0.4);
+}
+
+.hw-counter {
+  display: block;
+  font-size: 9px;
+  color: rgba(255, 255, 255, 0.5);
+  margin-top: 2px;
 }
 
 .prop-c,

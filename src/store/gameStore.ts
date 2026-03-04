@@ -40,6 +40,7 @@ interface GameStore extends GameState {
   clearLastBet: () => void;
   clearAllBets: () => void;
   doubleBets: () => void;
+  repeatLastBet: () => void;
   toggleBetsOnOff: () => void;
   startRoll: () => void;
   completeRoll: (outcome: DiceOutcome) => void;
@@ -164,6 +165,31 @@ export const useGameStore = create<GameStore>((set, get) => ({
     }
 
     set({ bets: doubledBets, credits: state.credits - totalAdditional });
+  },
+
+  repeatLastBet: () => {
+    const state = get();
+    if (state.lastBetConfig.length === 0) return;
+    if (state.isRolling) return;
+
+    // Calculate total cost
+    let totalCost = 0;
+    for (const config of state.lastBetConfig) {
+      totalCost += config.amount;
+      if (config.type === BetType.Buy || config.type === BetType.Lay) {
+        totalCost += calculateCommission(config.amount);
+      }
+    }
+
+    if (totalCost > state.credits) {
+      console.warn('Insufficient credits to repeat last bet');
+      return;
+    }
+
+    // Place each bet from the saved config
+    for (const config of state.lastBetConfig) {
+      get().placeBet(config.type, config.amount, config.pointNumber, config.hardWayTotal, config.diceCombination);
+    }
   },
 
   toggleBetsOnOff: () => {
