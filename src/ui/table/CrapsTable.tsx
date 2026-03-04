@@ -5,6 +5,7 @@
 import { useCallback, useState } from 'react';
 import { BetType, GamePhase, type PointNumber, type DiceCombination } from '../../engine/types';
 import { useGameStore } from '../../store/gameStore';
+import { soundManager } from '../../audio/SoundManager';
 import OddsPopup from '../modals/OddsPopup';
 import CommissionConfirm from '../modals/CommissionConfirm';
 import './CrapsTable.css';
@@ -40,7 +41,8 @@ export default function CrapsTable() {
         }
         return;
       }
-      placeBet(type, selectedChipValue, pointNumber, hardWayTotal);
+      const placed = placeBet(type, selectedChipValue, pointNumber, hardWayTotal);
+      if (placed) soundManager.play('chipPlace');
     },
     [placeBet, selectedChipValue]
   );
