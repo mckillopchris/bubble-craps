@@ -67,6 +67,12 @@ export enum BetType {
   HornBet = 'HORN_BET', // Combined horn (split 4 ways)
   Hop = 'HOP',
   HoppingHardWay = 'HOPPING_HARD_WAY',
+
+  // Side bets
+  LuckyShooter = 'LUCKY_SHOOTER',
+  LuckyRollerLow = 'LUCKY_ROLLER_LOW',
+  LuckyRollerHigh = 'LUCKY_ROLLER_HIGH',
+  LuckyRollerAll = 'LUCKY_ROLLER_ALL',
 }
 
 /** A specific dice combination for hop bets */
@@ -120,6 +126,10 @@ export interface GameState {
   lastBetConfig: Array<{ type: BetType; amount: number; pointNumber?: PointNumber; hardWayTotal?: 4 | 6 | 8 | 10; diceCombination?: DiceCombination }>;
   /** Total won on last roll */
   lastWin: number;
+  /** Lucky Shooter: unique point numbers hit during current shooter's turn */
+  luckyShooterHits: PointNumber[];
+  /** Lucky Roller: totals hit since last 7 (for Low/High/All tracking) */
+  luckyRollerHits: DiceTotal[];
 }
 
 /** Payout odds expressed as [pays, for] meaning "pays X for Y wagered" */

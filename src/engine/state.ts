@@ -30,6 +30,8 @@ export function createInitialState(credits: number = INITIAL_CREDITS): GameState
     betsOn: true,
     lastBetConfig: [],
     lastWin: 0,
+    luckyShooterHits: [],
+    luckyRollerHits: [],
   };
 }
 

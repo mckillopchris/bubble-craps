@@ -60,6 +60,12 @@ export function validateBetPlacement(
     case BetType.Hop:
     case BetType.HoppingHardWay:
       return { valid: true }; // these can be placed anytime
+    case BetType.LuckyShooter:
+      return validateLuckyShooter(state);
+    case BetType.LuckyRollerLow:
+    case BetType.LuckyRollerHigh:
+    case BetType.LuckyRollerAll:
+      return validateLuckyRoller(state, type);
     default:
       return { valid: false, reason: 'Unknown bet type' };
   }
@@ -144,6 +150,26 @@ function validateLay(state: GameState, pointNumber?: PointNumber): ValidationRes
   // Check for conflicting Place/Buy bets
   if (state.bets.some((b) => (b.type === BetType.Place || b.type === BetType.Buy) && b.pointNumber === pointNumber)) {
     return { valid: false, reason: `Cannot place Lay when Place/Buy is active on ${pointNumber}` };
+  }
+  return { valid: true };
+}
+
+function validateLuckyShooter(state: GameState): ValidationResult {
+  // Lucky Shooter can only be placed during come-out (before point is established)
+  if (state.phase !== GamePhase.ComeOut) {
+    return { valid: false, reason: 'Lucky Shooter can only be placed before a point is established' };
+  }
+  // Only one Lucky Shooter bet at a time
+  if (state.bets.some((b) => b.type === BetType.LuckyShooter)) {
+    return { valid: false, reason: 'Lucky Shooter bet already active' };
+  }
+  return { valid: true };
+}
+
+function validateLuckyRoller(state: GameState, type: BetType): ValidationResult {
+  // Lucky Roller can be placed anytime but only one of each type
+  if (state.bets.some((b) => b.type === type)) {
+    return { valid: false, reason: 'Lucky Roller bet of this type already active' };
   }
   return { valid: true };
 }

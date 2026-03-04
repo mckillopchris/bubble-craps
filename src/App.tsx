@@ -12,6 +12,8 @@ import GameHUD from './ui/display/GameHUD';
 import BettingTimer from './ui/display/BettingTimer';
 import RollHistory from './ui/display/RollHistory';
 import LastRollResult from './ui/display/LastRollResult';
+import LuckyShooter from './ui/sidebets/LuckyShooter';
+import LuckyRoller from './ui/sidebets/LuckyRoller';
 import { useGameStore } from './store/gameStore';
 import type { DiceOutcome } from './engine/types';
 import './App.css';
@@ -45,9 +47,11 @@ export default function App() {
 
       <main className="app-main">
         <div className="game-layout">
-          {/* Left sidebar - Roll History */}
+          {/* Left sidebar - Roll History & Side Bets */}
           <aside className="sidebar sidebar-left">
             <RollHistory />
+            <LuckyShooter />
+            <LuckyRoller />
           </aside>
 
           {/* Center - Main game area */}

@@ -1,0 +1,144 @@
+.lucky-roller {
+  background: linear-gradient(135deg, #0a0a1a 0%, #10102d 100%);
+  border: 2px solid #20208b;
+  border-radius: 12px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.lr-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.lr-title {
+  font-size: 14px;
+  font-weight: bold;
+  color: #ffd700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Number tracking grid */
+.lr-numbers {
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.lr-number {
+  width: 30px;
+  height: 30px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: bold;
+  color: #555;
+  background: #1a1a1a;
+  border: 1px solid #333;
+  transition: all 0.3s ease;
+}
+
+.lr-number-low {
+  border-color: #2a4a8b;
+}
+
+.lr-number-high {
+  border-color: #8b4a2a;
+}
+
+.lr-number-hit {
+  color: #fff;
+  background: linear-gradient(135deg, #b8860b 0%, #daa520 100%);
+  border-color: #ffd700;
+  box-shadow: 0 0 8px rgba(218, 165, 32, 0.4);
+  animation: goldGlow 0.4s ease-out;
+}
+
+@keyframes goldGlow {
+  0% {
+    transform: scale(1.2);
+    box-shadow: 0 0 16px rgba(218, 165, 32, 0.8);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 8px rgba(218, 165, 32, 0.4);
+  }
+}
+
+/* Sub-bet rows */
+.lr-bets {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.lr-bet-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid #2a2a3a;
+  transition: all 0.2s ease;
+}
+
+.lr-bet-active {
+  border-color: #ffd700;
+  background: rgba(255, 215, 0, 0.05);
+}
+
+.lr-bet-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.lr-bet-label {
+  font-size: 12px;
+  font-weight: bold;
+  color: #ccc;
+  min-width: 30px;
+}
+
+.lr-bet-odds {
+  font-size: 10px;
+  color: #888;
+}
+
+.lr-bet-progress {
+  font-size: 10px;
+  color: #ffd700;
+  font-weight: bold;
+}
+
+.lr-bet-amount {
+  font-size: 12px;
+  color: #ffd700;
+  font-weight: bold;
+}
+
+/* Place bet button */
+.lr-place-btn {
+  padding: 3px 10px;
+  border: 1px solid #3a3a6b;
+  border-radius: 4px;
+  background: linear-gradient(180deg, #3333cc 0%, #20208b 100%);
+  color: #fff;
+  font-size: 11px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.lr-place-btn:hover {
+  background: linear-gradient(180deg, #4444dd 0%, #3030aa 100%);
+  box-shadow: 0 0 8px rgba(51, 51, 204, 0.3);
+}
