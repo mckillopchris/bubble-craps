@@ -3,18 +3,8 @@
 // ============================================================
 
 import { useGameStore } from '../../store/gameStore';
+import { CHIP_VALUES, CHIP_COLORS } from './chipConstants';
 import './ChipRack.css';
-
-const CHIP_VALUES = [1, 5, 10, 25, 100, 500];
-
-const CHIP_COLORS: Record<number, string> = {
-  1: '#f0f0f0',
-  5: '#cc3333',
-  10: '#3366cc',
-  25: '#33aa33',
-  100: '#111111',
-  500: '#9933cc',
-};
 
 export default function ChipRack() {
   const selectedChipValue = useGameStore((s) => s.selectedChipValue);

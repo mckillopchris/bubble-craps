@@ -68,8 +68,9 @@ export default function LastRollResult() {
                 {r.bet.hardWayTotal ? ` (${r.bet.hardWayTotal})` : ''}
               </span>
               <span className="resolution-result">
-                {r.result === BetResult.Win && `+$${r.payout - r.bet.amount}`}
-                {r.result === BetResult.Lose && `-$${r.bet.amount}`}
+                {r.result === BetResult.Win && `+$${(r.payout - r.bet.amount).toFixed(2)}`}
+                {r.result === BetResult.WinStay && `+$${r.payout.toFixed(2)}`}
+                {r.result === BetResult.Lose && `-$${r.bet.amount.toFixed(2)}`}
                 {r.result === BetResult.Push && 'PUSH'}
               </span>
             </div>

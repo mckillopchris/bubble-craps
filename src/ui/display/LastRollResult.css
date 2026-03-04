@@ -58,7 +58,8 @@
   font-size: 12px;
 }
 
-.resolution-win {
+.resolution-win,
+.resolution-win_stay {
   background: rgba(0, 200, 0, 0.15);
 }
 
@@ -78,7 +79,8 @@
   font-weight: 700;
 }
 
-.resolution-win .resolution-result {
+.resolution-win .resolution-result,
+.resolution-win_stay .resolution-result {
   color: #00e676;
 }
 

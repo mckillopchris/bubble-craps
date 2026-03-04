@@ -9,7 +9,6 @@ import ChipRack from './ui/chips/ChipRack';
 import GameControls from './ui/controls/GameControls';
 import SpecialButtons from './ui/controls/SpecialButtons';
 import GameHUD from './ui/display/GameHUD';
-import BettingTimer from './ui/display/BettingTimer';
 import RollHistory from './ui/display/RollHistory';
 import LastRollResult from './ui/display/LastRollResult';
 import LuckyShooter from './ui/sidebets/LuckyShooter';
@@ -82,9 +81,6 @@ export default function App() {
           <div className="game-center">
             {/* HUD */}
             <GameHUD />
-
-            {/* Betting Timer */}
-            <BettingTimer />
 
             {/* Dice Roller */}
             <div className="dice-area">

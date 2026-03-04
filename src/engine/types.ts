@@ -28,6 +28,7 @@ export enum GamePhase {
 /** Bet resolution result */
 export enum BetResult {
   Win = 'WIN',
+  WinStay = 'WIN_STAY', // pays out but bet stays on table (e.g. Place bets)
   Lose = 'LOSE',
   Push = 'PUSH',
   Active = 'ACTIVE', // bet remains on table

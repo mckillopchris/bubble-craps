@@ -281,13 +281,13 @@ describe('Hard Ways', () => {
 // PLACE
 // ============================================================
 describe('Place', () => {
-  it('wins on point 6 with correct payout', () => {
+  it('wins on point 6 with correct payout and stays on table', () => {
     const bet = makeBet({ type: BetType.Place, pointNumber: 6, amount: 6 });
     const state = makeState({ bets: [bet] });
     const outcome = createDiceOutcome(2, 4);
     const result = resolveBet(bet, state, outcome);
-    expect(result.result).toBe(BetResult.Win);
-    expect(result.payout).toBe(13); // 6 + (6 * 7/6)
+    expect(result.result).toBe(BetResult.WinStay);
+    expect(result.payout).toBe(7); // 6 * 7/6 (bet stays, only winnings paid)
   });
 
   it('loses on 7', () => {

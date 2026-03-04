@@ -125,7 +125,7 @@ export const HOP_HARD_PAYOUT: PayoutOdds = { pays: 30, per: 1 }; // hopping hard
 
 /** Calculate payout amount for a given bet amount and odds */
 export function calculatePayout(amount: number, odds: PayoutOdds): number {
-  return (amount * odds.pays) / odds.per;
+  return Math.round(((amount * odds.pays) / odds.per) * 100) / 100;
 }
 
 /** Calculate commission for Buy/Lay bets */

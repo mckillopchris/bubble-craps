@@ -112,23 +112,48 @@ export const useGameStore = create<GameStore>((set, get) => ({
       return false;
     }
 
-    const bet: Bet = {
-      id: generateBetId(),
-      type,
-      amount: betAmount,
-      pointNumber,
-      hardWayTotal,
-      diceCombination,
-      isOn: true,
-      isContract: isContractBet(type),
-      commissionPaid,
-      parentBetId: undefined,
-    };
+    // Bet types that always create separate entries (each has its own lifecycle)
+    const ALWAYS_NEW_BET = new Set([BetType.Come, BetType.DontCome]);
 
-    set((s) => ({
-      bets: [...s.bets, bet],
-      credits: s.credits - totalDeduction,
-    }));
+    // Try to stack onto an existing bet of the same type/number
+    const existingBet = !ALWAYS_NEW_BET.has(type)
+      ? state.bets.find(
+          (b) =>
+            b.type === type &&
+            b.pointNumber === pointNumber &&
+            b.hardWayTotal === hardWayTotal &&
+            b.diceCombination === diceCombination
+        )
+      : undefined;
+
+    if (existingBet) {
+      set((s) => ({
+        bets: s.bets.map((b) =>
+          b.id === existingBet.id
+            ? { ...b, amount: b.amount + betAmount, commissionPaid: b.commissionPaid + commissionPaid }
+            : b
+        ),
+        credits: s.credits - totalDeduction,
+      }));
+    } else {
+      const bet: Bet = {
+        id: generateBetId(),
+        type,
+        amount: betAmount,
+        pointNumber,
+        hardWayTotal,
+        diceCombination,
+        isOn: true,
+        isContract: isContractBet(type),
+        commissionPaid,
+        parentBetId: undefined,
+      };
+
+      set((s) => ({
+        bets: [...s.bets, bet],
+        credits: s.credits - totalDeduction,
+      }));
+    }
 
     return true;
   },
@@ -319,13 +344,16 @@ export const useGameStore = create<GameStore>((set, get) => ({
     const resolvedBetIds = new Set<string>();
 
     for (const resolution of resolutions) {
-      if (resolution.result !== BetResult.Active) {
+      if (resolution.result === BetResult.WinStay) {
+        // Bet pays out but stays on the table (e.g. Place bets)
+        totalPayout += resolution.payout;
+      } else if (resolution.result !== BetResult.Active) {
         resolvedBetIds.add(resolution.bet.id);
         totalPayout += resolution.payout;
       }
     }
 
-    // Remove resolved bets, keep active ones
+    // Remove resolved bets, keep active ones (WinStay bets are NOT removed)
     const remainingBets = state.bets.filter((b) => !resolvedBetIds.has(b.id));
 
     // Handle Come/Don't Come point establishment

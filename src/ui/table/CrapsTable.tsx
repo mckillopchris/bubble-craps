@@ -6,6 +6,7 @@ import { useCallback, useState } from 'react';
 import { BetType, GamePhase, type PointNumber, type DiceCombination } from '../../engine/types';
 import { useGameStore } from '../../store/gameStore';
 import { soundManager } from '../../audio/SoundManager';
+import BetChip from '../chips/BetChip';
 import OddsPopup from '../modals/OddsPopup';
 import CommissionConfirm from '../modals/CommissionConfirm';
 import './CrapsTable.css';
@@ -103,7 +104,7 @@ export default function CrapsTable() {
               >
                 <span className="bet-label">PLACE</span>
                 {getBetTotal(BetType.Place, num) > 0 && (
-                  <span className="bet-chip">${getBetTotal(BetType.Place, num)}</span>
+                  <BetChip amount={getBetTotal(BetType.Place, num)} />
                 )}
               </button>
 
@@ -115,7 +116,7 @@ export default function CrapsTable() {
               >
                 <span className="bet-label">BUY</span>
                 {getBetTotal(BetType.Buy, num) > 0 && (
-                  <span className="bet-chip">${getBetTotal(BetType.Buy, num)}</span>
+                  <BetChip amount={getBetTotal(BetType.Buy, num)} />
                 )}
               </button>
 
@@ -127,7 +128,7 @@ export default function CrapsTable() {
               >
                 <span className="bet-label">LAY</span>
                 {getBetTotal(BetType.Lay, num) > 0 && (
-                  <span className="bet-chip">${getBetTotal(BetType.Lay, num)}</span>
+                  <BetChip amount={getBetTotal(BetType.Lay, num)} />
                 )}
               </button>
             </div>
@@ -145,7 +146,7 @@ export default function CrapsTable() {
         >
           <span className="bet-label">PASS LINE</span>
           {getBetTotal(BetType.PassLine) > 0 && (
-            <span className="bet-chip">${getBetTotal(BetType.PassLine)}</span>
+            <BetChip amount={getBetTotal(BetType.PassLine)} />
           )}
         </button>
 
@@ -157,7 +158,7 @@ export default function CrapsTable() {
         >
           <span className="bet-label">DON'T PASS</span>
           {getBetTotal(BetType.DontPass) > 0 && (
-            <span className="bet-chip">${getBetTotal(BetType.DontPass)}</span>
+            <BetChip amount={getBetTotal(BetType.DontPass)} />
           )}
         </button>
 
@@ -175,7 +176,7 @@ export default function CrapsTable() {
         >
           <span className="bet-label">ODDS</span>
           {getBetTotal(BetType.PassLineOdds) > 0 && (
-            <span className="bet-chip">${getBetTotal(BetType.PassLineOdds)}</span>
+            <BetChip amount={getBetTotal(BetType.PassLineOdds)} />
           )}
         </button>
 
@@ -193,7 +194,7 @@ export default function CrapsTable() {
         >
           <span className="bet-label">DP ODDS</span>
           {getBetTotal(BetType.DontPassOdds) > 0 && (
-            <span className="bet-chip">${getBetTotal(BetType.DontPassOdds)}</span>
+            <BetChip amount={getBetTotal(BetType.DontPassOdds)} />
           )}
         </button>
 
@@ -205,7 +206,7 @@ export default function CrapsTable() {
         >
           <span className="bet-label">COME</span>
           {getBetTotal(BetType.Come) > 0 && (
-            <span className="bet-chip">${getBetTotal(BetType.Come)}</span>
+            <BetChip amount={getBetTotal(BetType.Come)} />
           )}
         </button>
 
@@ -217,7 +218,7 @@ export default function CrapsTable() {
         >
           <span className="bet-label">DON'T COME</span>
           {getBetTotal(BetType.DontCome) > 0 && (
-            <span className="bet-chip">${getBetTotal(BetType.DontCome)}</span>
+            <BetChip amount={getBetTotal(BetType.DontCome)} />
           )}
         </button>
 
@@ -230,7 +231,7 @@ export default function CrapsTable() {
           <span className="bet-label">FIELD</span>
           <span className="field-numbers">2 3 4 9 10 11 12</span>
           {getBetTotal(BetType.Field) > 0 && (
-            <span className="bet-chip">${getBetTotal(BetType.Field)}</span>
+            <BetChip amount={getBetTotal(BetType.Field)} />
           )}
         </button>
       </div>
@@ -249,7 +250,7 @@ export default function CrapsTable() {
               <span className="bet-label">HARD {hw}</span>
               <span className="hw-counter">{rollsSinceHardWay[hw]} rolls</span>
               {getBetTotal(BetType.HardWay, undefined, hw) > 0 && (
-                <span className="bet-chip">${getBetTotal(BetType.HardWay, undefined, hw)}</span>
+                <BetChip amount={getBetTotal(BetType.HardWay, undefined, hw)} />
               )}
             </button>
           ))}
@@ -258,23 +259,23 @@ export default function CrapsTable() {
         <div className="prop-row">
           <button className="bet-area prop-c" onClick={() => handleBetClick(BetType.Craps)} title="Craps (C)">
             <span className="bet-label">C</span>
-            {getBetTotal(BetType.Craps) > 0 && <span className="bet-chip">${getBetTotal(BetType.Craps)}</span>}
+            {getBetTotal(BetType.Craps) > 0 && <BetChip amount={getBetTotal(BetType.Craps)} />}
           </button>
           <button className="bet-area prop-e" onClick={() => handleBetClick(BetType.Eleven)} title="Eleven (E)">
             <span className="bet-label">E</span>
-            {getBetTotal(BetType.Eleven) > 0 && <span className="bet-chip">${getBetTotal(BetType.Eleven)}</span>}
+            {getBetTotal(BetType.Eleven) > 0 && <BetChip amount={getBetTotal(BetType.Eleven)} />}
           </button>
           <button className="bet-area prop-ce" onClick={() => handleBetClick(BetType.CrapsEleven)} title="Craps & Eleven">
             <span className="bet-label">C&E</span>
-            {getBetTotal(BetType.CrapsEleven) > 0 && <span className="bet-chip">${getBetTotal(BetType.CrapsEleven)}</span>}
+            {getBetTotal(BetType.CrapsEleven) > 0 && <BetChip amount={getBetTotal(BetType.CrapsEleven)} />}
           </button>
           <button className="bet-area prop-seven" onClick={() => handleBetClick(BetType.Seven)} title="Seven">
             <span className="bet-label">7</span>
-            {getBetTotal(BetType.Seven) > 0 && <span className="bet-chip">${getBetTotal(BetType.Seven)}</span>}
+            {getBetTotal(BetType.Seven) > 0 && <BetChip amount={getBetTotal(BetType.Seven)} />}
           </button>
           <button className="bet-area prop-any-craps" onClick={() => handleBetClick(BetType.AnyCraps)} title="Any Craps">
             <span className="bet-label">ANY CRAPS</span>
-            {getBetTotal(BetType.AnyCraps) > 0 && <span className="bet-chip">${getBetTotal(BetType.AnyCraps)}</span>}
+            {getBetTotal(BetType.AnyCraps) > 0 && <BetChip amount={getBetTotal(BetType.AnyCraps)} />}
           </button>
         </div>
 
@@ -293,7 +294,7 @@ export default function CrapsTable() {
               title={title}
             >
               <span className="bet-label">{label}</span>
-              {getBetTotal(type) > 0 && <span className="bet-chip">${getBetTotal(type)}</span>}
+              {getBetTotal(type) > 0 && <BetChip amount={getBetTotal(type)} />}
             </button>
           ))}
         </div>
@@ -301,11 +302,11 @@ export default function CrapsTable() {
         <div className="prop-row">
           <button className="bet-area big-bet" onClick={() => handleBetClick(BetType.Big6)} title="Big 6">
             <span className="bet-label">BIG 6</span>
-            {getBetTotal(BetType.Big6) > 0 && <span className="bet-chip">${getBetTotal(BetType.Big6)}</span>}
+            {getBetTotal(BetType.Big6) > 0 && <BetChip amount={getBetTotal(BetType.Big6)} />}
           </button>
           <button className="bet-area big-bet" onClick={() => handleBetClick(BetType.Big8)} title="Big 8">
             <span className="bet-label">BIG 8</span>
-            {getBetTotal(BetType.Big8) > 0 && <span className="bet-chip">${getBetTotal(BetType.Big8)}</span>}
+            {getBetTotal(BetType.Big8) > 0 && <BetChip amount={getBetTotal(BetType.Big8)} />}
           </button>
         </div>
       </div>

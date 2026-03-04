@@ -290,7 +290,7 @@ function resolvePlace(bet: Bet, outcome: DiceOutcome): BetResolution {
   }
   if (outcome.total === bet.pointNumber) {
     const odds = PLACE_PAYOUTS[bet.pointNumber];
-    return { bet, result: BetResult.Win, payout: bet.amount + calculatePayout(bet.amount, odds) };
+    return { bet, result: BetResult.WinStay, payout: calculatePayout(bet.amount, odds) };
   }
   if (outcome.total === 7) {
     return { bet, result: BetResult.Lose, payout: 0 };

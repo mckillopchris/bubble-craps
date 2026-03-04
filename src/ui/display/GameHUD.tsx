@@ -19,18 +19,18 @@ export default function GameHUD() {
     <div className="game-hud">
       <div className="hud-item">
         <span className="hud-label">CREDIT</span>
-        <span className="hud-value credit-value">${credits.toFixed(0)}</span>
+        <span className="hud-value credit-value">${credits.toFixed(2)}</span>
       </div>
 
       <div className="hud-item">
         <span className="hud-label">BET</span>
-        <span className="hud-value bet-value">${totalBets.toFixed(0)}</span>
+        <span className="hud-value bet-value">${totalBets.toFixed(2)}</span>
       </div>
 
       <div className="hud-item">
         <span className="hud-label">LAST WIN</span>
         <span className={`hud-value ${lastWin > 0 ? 'win-value' : ''}`}>
-          ${lastWin.toFixed(0)}
+          ${lastWin.toFixed(2)}
         </span>
       </div>
 
