@@ -7,7 +7,9 @@ import DiceRoller, { type DiceRollerRef } from './dice/DiceRoller';
 import CrapsTable from './ui/table/CrapsTable';
 import ChipRack from './ui/chips/ChipRack';
 import GameControls from './ui/controls/GameControls';
+import SpecialButtons from './ui/controls/SpecialButtons';
 import GameHUD from './ui/display/GameHUD';
+import BettingTimer from './ui/display/BettingTimer';
 import RollHistory from './ui/display/RollHistory';
 import LastRollResult from './ui/display/LastRollResult';
 import { useGameStore } from './store/gameStore';
@@ -32,7 +34,6 @@ export default function App() {
     diceRollerRef.current?.roll();
   }, [startRoll]);
 
-  // Override the store's startRoll to also trigger the dice roller
   const bets = useGameStore((s) => s.bets);
   const hasBets = bets.length > 0;
 
@@ -53,6 +54,9 @@ export default function App() {
           <div className="game-center">
             {/* HUD */}
             <GameHUD />
+
+            {/* Betting Timer */}
+            <BettingTimer />
 
             {/* Dice Roller */}
             <div className="dice-area">
@@ -77,6 +81,9 @@ export default function App() {
 
             {/* Craps Table */}
             <CrapsTable />
+
+            {/* Special Buttons */}
+            <SpecialButtons />
 
             {/* Chip Rack */}
             <ChipRack />

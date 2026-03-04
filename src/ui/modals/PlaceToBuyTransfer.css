@@ -1,0 +1,96 @@
+.transfer-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease;
+}
+
+.transfer-popup {
+  background: linear-gradient(180deg, #1a1a2a 0%, #0d0d1a 100%);
+  border: 2px solid #4488cc;
+  border-radius: 16px;
+  padding: 24px;
+  min-width: 340px;
+  max-width: 420px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8), 0 0 20px rgba(68, 136, 204, 0.1);
+  animation: slideUp 0.2s ease;
+}
+
+.transfer-title {
+  text-align: center;
+  color: #4488cc;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+
+.transfer-desc {
+  text-align: center;
+  color: #aaa;
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+
+.transfer-options {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.transfer-option {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  border: 2px solid rgba(68, 136, 204, 0.3);
+  border-radius: 8px;
+  background: rgba(68, 136, 204, 0.08);
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: inherit;
+}
+
+.transfer-option:hover {
+  background: rgba(68, 136, 204, 0.2);
+  border-color: #4488cc;
+}
+
+.transfer-num {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.transfer-detail {
+  font-size: 11px;
+  color: #aaa;
+}
+
+.transfer-skip {
+  width: 100%;
+  padding: 10px;
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  color: #888;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: inherit;
+  letter-spacing: 0.5px;
+}
+
+.transfer-skip:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ccc;
+}
