@@ -180,3 +180,27 @@ export const MAX_ODDS_MULTIPLIERS: Record<PointNumber, number> = {
   9: 4,
   10: 3,
 };
+
+// -- Lucky Shooter side bet payouts --
+// Based on unique point numbers hit during a shooter's turn before 7-out
+/** Lucky Shooter payouts by number of unique point hits */
+export const LUCKY_SHOOTER_PAYOUTS: Record<number, PayoutOdds> = {
+  2: { pays: 2, per: 1 },
+  3: { pays: 4, per: 1 },
+  4: { pays: 15, per: 1 },
+  5: { pays: 50, per: 1 },
+  6: { pays: 300, per: 1 }, // All 6 points hit
+};
+
+// -- Lucky Roller side bet payouts --
+/** Lucky Roller Low: hit 2, 3, 4, 5, 6 before a 7 */
+export const LUCKY_ROLLER_LOW_PAYOUT: PayoutOdds = { pays: 34, per: 1 };
+/** Lucky Roller High: hit 8, 9, 10, 11, 12 before a 7 */
+export const LUCKY_ROLLER_HIGH_PAYOUT: PayoutOdds = { pays: 34, per: 1 };
+/** Lucky Roller All: hit 2-6 and 8-12 before a 7 */
+export const LUCKY_ROLLER_ALL_PAYOUT: PayoutOdds = { pays: 175, per: 1 };
+
+/** Lucky Roller target numbers */
+export const LUCKY_ROLLER_LOW_TARGETS: number[] = [2, 3, 4, 5, 6];
+export const LUCKY_ROLLER_HIGH_TARGETS: number[] = [8, 9, 10, 11, 12];
+export const LUCKY_ROLLER_ALL_TARGETS: number[] = [2, 3, 4, 5, 6, 8, 9, 10, 11, 12];

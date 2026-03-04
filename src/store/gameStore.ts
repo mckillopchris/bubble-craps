@@ -337,9 +337,31 @@ export const useGameStore = create<GameStore>((set, get) => ({
     // Update hard way counters
     const newHardWayCounters = updateHardWayCounters(state.rollsSinceHardWay, outcome);
 
-    // Save bet config for repeat
+    // Update Lucky Shooter hits: track unique point numbers hit during shooter's turn
+    let newLuckyShooterHits = [...state.luckyShooterHits];
+    if (isPointNumber(outcome.total) && !newLuckyShooterHits.includes(outcome.total)) {
+      newLuckyShooterHits.push(outcome.total);
+    }
+    // Reset on 7-out (7 during point phase = new shooter)
+    if (state.phase === GamePhase.Point && outcome.total === 7) {
+      newLuckyShooterHits = [];
+    }
+
+    // Update Lucky Roller hits: track all totals hit since last 7
+    let newLuckyRollerHits = [...state.luckyRollerHits];
+    if (outcome.total === 7) {
+      // 7 resets Lucky Roller tracking
+      newLuckyRollerHits = [];
+    } else {
+      if (!newLuckyRollerHits.includes(outcome.total)) {
+        newLuckyRollerHits.push(outcome.total);
+      }
+    }
+
+    // Save bet config for repeat (exclude side bets)
+    const SIDE_BET_TYPES = new Set([BetType.LuckyShooter, BetType.LuckyRollerLow, BetType.LuckyRollerHigh, BetType.LuckyRollerAll]);
     const lastBetConfig = state.bets
-      .filter((b) => !isSingleRollBet(b.type) || resolvedBetIds.has(b.id))
+      .filter((b) => !SIDE_BET_TYPES.has(b.type) && (!isSingleRollBet(b.type) || resolvedBetIds.has(b.id)))
       .map((b) => ({
         type: b.type,
         amount: b.amount,
@@ -361,6 +383,8 @@ export const useGameStore = create<GameStore>((set, get) => ({
       lastWin: totalPayout,
       lastResolutions: resolutions,
       lastBetConfig: lastBetConfig.length > 0 ? lastBetConfig : state.lastBetConfig,
+      luckyShooterHits: newLuckyShooterHits,
+      luckyRollerHits: newLuckyRollerHits,
     });
   },
 

@@ -1,0 +1,139 @@
+.lucky-shooter {
+  background: linear-gradient(135deg, #1a0a0a 0%, #2d1010 100%);
+  border: 2px solid #8b2020;
+  border-radius: 12px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ls-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ls-title {
+  font-size: 14px;
+  font-weight: bold;
+  color: #ff4444;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.ls-bet-amount {
+  font-size: 13px;
+  color: #ffd700;
+  font-weight: bold;
+}
+
+/* Point tracking display */
+.ls-points {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+}
+
+.ls-point {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: bold;
+  color: #666;
+  background: #1a1a1a;
+  border: 2px solid #333;
+  transition: all 0.3s ease;
+}
+
+.ls-point-active {
+  color: #cc3333;
+  border-color: #8b2020;
+  background: #2a0a0a;
+}
+
+.ls-point-hit {
+  color: #fff;
+  background: #4488ff;
+  border-color: #6699ff;
+  box-shadow: 0 0 10px rgba(68, 136, 255, 0.5);
+  animation: hitGlow 0.5s ease-out;
+}
+
+@keyframes hitGlow {
+  0% {
+    transform: scale(1.3);
+    box-shadow: 0 0 20px rgba(68, 136, 255, 0.8);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 10px rgba(68, 136, 255, 0.5);
+  }
+}
+
+/* Hit counter */
+.ls-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+}
+
+.ls-hits {
+  color: #aaa;
+  font-weight: bold;
+}
+
+.ls-payout {
+  color: #4caf50;
+  font-weight: bold;
+}
+
+/* Payout table */
+.ls-payouts {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 10px;
+}
+
+.ls-payout-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 2px 6px;
+  color: #777;
+  border-radius: 3px;
+}
+
+.ls-payout-achieved {
+  color: #4caf50;
+  background: rgba(76, 175, 80, 0.1);
+}
+
+/* Place bet button */
+.ls-place-btn {
+  padding: 6px 12px;
+  border: 2px solid #8b2020;
+  border-radius: 6px;
+  background: linear-gradient(180deg, #cc3333 0%, #8b2020 100%);
+  color: #fff;
+  font-size: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: all 0.2s ease;
+}
+
+.ls-place-btn:hover:not(:disabled) {
+  background: linear-gradient(180deg, #dd4444 0%, #aa3030 100%);
+  box-shadow: 0 0 10px rgba(204, 51, 51, 0.3);
+}
+
+.ls-place-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}

@@ -20,6 +20,13 @@ import {
   HOP_HARD_PAYOUT,
   HORN_PAYOUTS,
   LAY_PAYOUTS,
+  LUCKY_ROLLER_ALL_PAYOUT,
+  LUCKY_ROLLER_ALL_TARGETS,
+  LUCKY_ROLLER_HIGH_PAYOUT,
+  LUCKY_ROLLER_HIGH_TARGETS,
+  LUCKY_ROLLER_LOW_PAYOUT,
+  LUCKY_ROLLER_LOW_TARGETS,
+  LUCKY_SHOOTER_PAYOUTS,
   PASS_LINE_PAYOUT,
   PASS_ODDS_PAYOUTS,
   PLACE_PAYOUTS,
@@ -101,6 +108,14 @@ export function resolveBet(bet: Bet, state: GameState, outcome: DiceOutcome): Be
       return resolveHop(bet, outcome);
     case BetType.HoppingHardWay:
       return resolveHoppingHardWay(bet, outcome);
+    case BetType.LuckyShooter:
+      return resolveLuckyShooter(bet, state, outcome);
+    case BetType.LuckyRollerLow:
+      return resolveLuckyRoller(bet, state, outcome, LUCKY_ROLLER_LOW_TARGETS, LUCKY_ROLLER_LOW_PAYOUT);
+    case BetType.LuckyRollerHigh:
+      return resolveLuckyRoller(bet, state, outcome, LUCKY_ROLLER_HIGH_TARGETS, LUCKY_ROLLER_HIGH_PAYOUT);
+    case BetType.LuckyRollerAll:
+      return resolveLuckyRoller(bet, state, outcome, LUCKY_ROLLER_ALL_TARGETS, LUCKY_ROLLER_ALL_PAYOUT);
     default:
       return { bet, result: BetResult.Active, payout: 0 };
   }
@@ -468,4 +483,56 @@ function resolveHoppingHardWay(bet: Bet, outcome: DiceOutcome): BetResolution {
     return { bet, result: BetResult.Win, payout: bet.amount + calculatePayout(bet.amount, HOP_HARD_PAYOUT) };
   }
   return { bet, result: BetResult.Lose, payout: 0 };
+}
+
+// -- Lucky Shooter --
+// Resolves on 7-out. Pays based on unique point numbers hit during shooter's turn.
+// The hits are tracked in GameState.luckyShooterHits and include the CURRENT roll.
+function resolveLuckyShooter(bet: Bet, state: GameState, outcome: DiceOutcome): BetResolution {
+  // Lucky Shooter only resolves on 7-out (7 during point phase)
+  if (state.phase !== GamePhase.Point || outcome.total !== 7) {
+    return { bet, result: BetResult.Active, payout: 0 };
+  }
+
+  // Count unique point hits (already tracked in state, current roll won't add a 7)
+  const hits = state.luckyShooterHits.length;
+
+  if (hits >= 2 && LUCKY_SHOOTER_PAYOUTS[hits]) {
+    const odds = LUCKY_SHOOTER_PAYOUTS[hits];
+    return { bet, result: BetResult.Win, payout: bet.amount + calculatePayout(bet.amount, odds) };
+  }
+
+  // 0-1 hits: lose
+  return { bet, result: BetResult.Lose, payout: 0 };
+}
+
+// -- Lucky Roller (Low, High, All) --
+// Wins when all target numbers are hit. Loses on 7.
+// Tracking is done in GameState.luckyRollerHits, which includes the current roll.
+import type { PayoutOdds } from './types';
+function resolveLuckyRoller(
+  bet: Bet,
+  state: GameState,
+  outcome: DiceOutcome,
+  targets: number[],
+  winPayout: PayoutOdds
+): BetResolution {
+  // Check if current roll completes all targets
+  const currentHits = new Set(state.luckyRollerHits);
+  if (outcome.total !== 7) {
+    currentHits.add(outcome.total);
+  }
+
+  const allHit = targets.every((t) => currentHits.has(t as DiceOutcome['total']));
+
+  if (allHit) {
+    return { bet, result: BetResult.Win, payout: bet.amount + calculatePayout(bet.amount, winPayout) };
+  }
+
+  // Lose on 7
+  if (outcome.total === 7) {
+    return { bet, result: BetResult.Lose, payout: 0 };
+  }
+
+  return { bet, result: BetResult.Active, payout: 0 };
 }
