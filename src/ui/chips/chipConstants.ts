@@ -3,15 +3,15 @@
 // Used by ChipRack (selectable) and BetChip (on-table display)
 // ============================================================
 
-export const CHIP_VALUES = [1, 5, 10, 25, 100, 500] as const;
+export const CHIP_VALUES = [1, 2, 5, 10, 20, 50] as const;
 
 export const CHIP_COLORS: Record<number, string> = {
   1: '#f0f0f0',
+  2: '#dd7733',
   5: '#cc3333',
   10: '#3366cc',
-  25: '#33aa33',
-  100: '#111111',
-  500: '#9933cc',
+  20: '#55aa33',
+  50: '#9933cc',
 };
 
 /**

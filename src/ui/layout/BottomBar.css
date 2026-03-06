@@ -1,0 +1,200 @@
+.bottom-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px;
+  background: linear-gradient(180deg, #1a1a1a 0%, #111 100%);
+  border-top: 2px solid #8b7d3c;
+  flex-shrink: 0;
+  min-height: 58px;
+}
+
+/* Roll History Strip */
+.bb-history {
+  flex: 0 0 200px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+}
+
+.bb-history::-webkit-scrollbar {
+  display: none;
+}
+
+.bb-history-empty {
+  font-size: 10px;
+  color: #555;
+  text-align: center;
+  display: block;
+}
+
+.bb-history-strip {
+  display: flex;
+  gap: 3px;
+  flex-direction: row-reverse;
+  justify-content: flex-end;
+}
+
+.bb-history-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2px 3px;
+  border-radius: 4px;
+  min-width: 34px;
+  flex-shrink: 0;
+  gap: 1px;
+}
+
+.bb-history-latest {
+  outline: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.bb-history-total {
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+  color: #ccc;
+}
+
+/* Control Buttons */
+.bb-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #bbb;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: inherit;
+  flex-shrink: 0;
+}
+
+.bb-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+
+.bb-btn:disabled {
+  opacity: 0.25;
+  cursor: not-allowed;
+}
+
+.bb-btn-icon {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.bb-btn-text {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  line-height: 1.2;
+  text-align: left;
+}
+
+.bb-clear:hover:not(:disabled) {
+  border-color: #c44;
+  color: #f88;
+}
+
+.bb-double:hover:not(:disabled) {
+  border-color: #4c4;
+  color: #8f8;
+}
+
+.bb-repeat:hover:not(:disabled) {
+  border-color: #4488cc;
+  color: #88bbff;
+}
+
+/* Chip Rack */
+.bb-chips {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex: 1;
+  justify-content: center;
+}
+
+.bb-chip {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--chip-color);
+  border: 2.5px dashed rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+  font-family: inherit;
+  flex-shrink: 0;
+}
+
+.bb-chip:hover:not(.bb-chip-disabled) {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+}
+
+.bb-chip-selected {
+  transform: translateY(-4px);
+  box-shadow: 0 0 0 2px #ffd700, 0 4px 12px rgba(0, 0, 0, 0.5);
+  border-color: rgba(255, 255, 255, 0.7);
+}
+
+.bb-chip-selected:hover {
+  transform: translateY(-4px);
+}
+
+.bb-chip-disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.bb-chip-value {
+  font-size: 11px;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+/* White chip needs dark text */
+.bb-chip:first-child .bb-chip-value {
+  color: #333;
+  text-shadow: none;
+}
+
+/* ROLL Button */
+.bb-roll {
+  padding: 10px 24px;
+  border: 2px solid #ffd700;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #228b22 0%, #1a6b1a 100%);
+  color: #fff;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
+  text-transform: uppercase;
+  font-family: inherit;
+  flex-shrink: 0;
+}
+
+.bb-roll:hover:not(:disabled) {
+  background: linear-gradient(180deg, #2aad2a 0%, #228b22 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+}
+
+.bb-roll:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  border-color: #666;
+}

@@ -1,11 +1,11 @@
 .lucky-roller {
   background: linear-gradient(135deg, #0a0a1a 0%, #10102d 100%);
   border: 2px solid #20208b;
-  border-radius: 12px;
-  padding: 12px;
+  border-radius: 10px;
+  padding: 8px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 4px;
 }
 
 .lr-header {
@@ -15,29 +15,29 @@
 }
 
 .lr-title {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: bold;
   color: #ffd700;
   text-transform: uppercase;
   letter-spacing: 1px;
 }
 
-/* Number tracking grid */
+/* Number tracking grid - horizontal row */
 .lr-numbers {
   display: flex;
-  gap: 4px;
+  gap: 3px;
   justify-content: center;
   flex-wrap: wrap;
 }
 
 .lr-number {
-  width: 30px;
-  height: 30px;
+  width: 26px;
+  height: 26px;
   border-radius: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: bold;
   color: #555;
   background: #1a1a1a;
@@ -57,18 +57,18 @@
   color: #fff;
   background: linear-gradient(135deg, #b8860b 0%, #daa520 100%);
   border-color: #ffd700;
-  box-shadow: 0 0 8px rgba(218, 165, 32, 0.4);
+  box-shadow: 0 0 6px rgba(218, 165, 32, 0.4);
   animation: goldGlow 0.4s ease-out;
 }
 
 @keyframes goldGlow {
   0% {
     transform: scale(1.2);
-    box-shadow: 0 0 16px rgba(218, 165, 32, 0.8);
+    box-shadow: 0 0 12px rgba(218, 165, 32, 0.8);
   }
   100% {
     transform: scale(1);
-    box-shadow: 0 0 8px rgba(218, 165, 32, 0.4);
+    box-shadow: 0 0 6px rgba(218, 165, 32, 0.4);
   }
 }
 
@@ -76,15 +76,15 @@
 .lr-bets {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 3px;
 }
 
 .lr-bet-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 4px 8px;
-  border-radius: 6px;
+  padding: 3px 6px;
+  border-radius: 5px;
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid #2a2a3a;
   transition: all 0.2s ease;
@@ -98,44 +98,45 @@
 .lr-bet-info {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 }
 
 .lr-bet-label {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: bold;
   color: #ccc;
-  min-width: 30px;
+  min-width: 28px;
 }
 
 .lr-bet-odds {
-  font-size: 10px;
+  font-size: 9px;
   color: #888;
 }
 
 .lr-bet-progress {
-  font-size: 10px;
+  font-size: 9px;
   color: #ffd700;
   font-weight: bold;
 }
 
 .lr-bet-amount {
-  font-size: 12px;
+  font-size: 11px;
   color: #ffd700;
   font-weight: bold;
 }
 
 /* Place bet button */
 .lr-place-btn {
-  padding: 3px 10px;
+  padding: 2px 8px;
   border: 1px solid #3a3a6b;
   border-radius: 4px;
   background: linear-gradient(180deg, #3333cc 0%, #20208b 100%);
   color: #fff;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: bold;
   cursor: pointer;
   transition: all 0.2s ease;
+  font-family: inherit;
 }
 
 .lr-place-btn:hover {

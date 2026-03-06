@@ -5,208 +5,109 @@
 }
 
 :root {
-  --bg-color: #0a0f0a;
-  --text-color: #e0e0e0;
+  --ib-bg: #0a0a12;
+  --ib-green: #1a5c28;
+  --ib-green-dark: #0d3a16;
+  --ib-gold: #8b7d3c;
+  --ib-gold-bright: #ffd700;
+  --ib-text: #e0e0e0;
+  --ib-blue: #2a6aaa;
+  --ib-red: #cc2222;
 }
 
 body {
-  background: var(--bg-color);
-  color: var(--text-color);
+  background: var(--ib-bg);
+  color: var(--ib-text);
   font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
   min-height: 100vh;
-  overflow-x: hidden;
+  overflow: hidden;
 }
 
-.app {
-  min-height: 100vh;
+/* Interblock machine layout */
+.app.interblock {
   display: flex;
   flex-direction: column;
-}
-
-.app-header {
-  text-align: center;
-  padding: 12px 16px;
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0.6) 0%, transparent 100%);
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.header-buttons {
-  position: absolute;
-  right: 20px;
-  top: 50%;
-  transform: translateY(-50%);
-  display: flex;
-  gap: 8px;
-}
-
-.header-btn {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  border: 1px solid rgba(255, 215, 0, 0.3);
-  background: rgba(255, 255, 255, 0.05);
-  color: #ccc;
-  font-size: 18px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: inherit;
-}
-
-.header-btn:hover {
-  background: rgba(255, 215, 0, 0.15);
-  color: #ffd700;
-  border-color: rgba(255, 215, 0, 0.5);
-}
-
-.app-title {
-  font-size: 28px;
-  font-weight: 700;
-  letter-spacing: 4px;
-  color: #ffd700;
-  text-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+  height: 100vh;
+  overflow: hidden;
 }
 
 .app-main {
   flex: 1;
-  padding: 0 16px 24px;
-}
-
-.game-layout {
   display: flex;
-  gap: 16px;
-  max-width: 1400px;
-  margin: 0 auto;
-  justify-content: center;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 0;
 }
 
-.sidebar {
+/* Upper area: Dice + Side Bets + Info */
+.upper-area {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 12px;
+  padding: 4px 12px;
   flex-shrink: 0;
-  min-width: 140px;
-  max-width: 200px;
+  max-height: 240px;
+  overflow: visible;  /* allow dice roller to scale up during roll animation */
+  position: relative;
+  z-index: 10;  /* ensure expanded dice bubble renders above table area */
 }
 
-.game-center {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
+.upper-left {
   flex: 1;
-  max-width: 950px;
+  max-width: 340px;
+  min-width: 200px;
 }
 
-.dice-area {
+.upper-center {
+  flex: 0 0 auto;
   display: flex;
   justify-content: center;
+  position: relative;
+  z-index: 1;  /* ensure scaled dice roller renders above siblings */
 }
 
-.roll-area {
-  display: flex;
-  justify-content: center;
-}
-
-.main-roll-btn {
-  padding: 14px 56px;
-  border: 3px solid #ffd700;
-  border-radius: 50px;
-  background: linear-gradient(180deg, #228b22 0%, #1a6b1a 100%);
-  color: #fff;
-  font-size: 22px;
-  font-weight: 700;
-  letter-spacing: 3px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5), 0 0 20px rgba(34, 139, 34, 0.2);
-  text-transform: uppercase;
-  font-family: inherit;
-}
-
-.main-roll-btn:hover:not(:disabled) {
-  background: linear-gradient(180deg, #2aad2a 0%, #228b22 100%);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5), 0 0 30px rgba(34, 139, 34, 0.3);
-}
-
-.main-roll-btn:active:not(:disabled) {
-  transform: translateY(0);
-}
-
-.main-roll-btn:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-  border-color: #666;
-}
-
-/* Sidebar layout */
-.sidebar {
+.upper-right {
+  flex: 1;
+  max-width: 300px;
+  min-width: 180px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
 }
 
-/* Responsive - Tablet */
+/* Main table area */
+.table-area {
+  flex: 1;
+  overflow: hidden;
+  padding: 0 12px 8px;
+  display: flex;
+  justify-content: center;
+  min-height: 0;
+}
+
+/* Responsive - smaller screens */
 @media (max-width: 1100px) {
-  .game-layout {
+  .upper-area {
+    flex-wrap: wrap;
+    max-height: none;
+  }
+
+  .upper-left,
+  .upper-right {
+    max-width: 100%;
+    min-width: auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .upper-area {
     flex-direction: column;
     align-items: center;
+    padding: 4px 8px;
   }
 
-  .sidebar {
-    flex-direction: row;
-    max-width: 100%;
-    width: 100%;
-    gap: 8px;
-    justify-content: center;
-    flex-wrap: wrap;
-  }
-
-  .sidebar-left {
-    order: 2;
-  }
-
-  .game-center {
-    order: 1;
-  }
-
-  .sidebar-right {
-    order: 3;
-  }
-
-  .header-buttons {
-    right: 12px;
-  }
-}
-
-/* Responsive - Mobile */
-@media (max-width: 600px) {
-  .app-header {
-    padding: 8px;
-  }
-
-  .app-title {
-    font-size: 20px;
-    letter-spacing: 2px;
-  }
-
-  .app-main {
-    padding: 0 8px 16px;
-  }
-
-  .game-center {
-    gap: 8px;
-  }
-
-  .main-roll-btn {
-    padding: 10px 40px;
-    font-size: 18px;
-  }
-
-  .sidebar {
-    min-width: auto;
+  .table-area {
+    padding: 0 4px 4px;
   }
 }

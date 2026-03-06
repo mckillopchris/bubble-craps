@@ -8,7 +8,6 @@
   background: var(--bet-chip-color);
   border: 2px dashed rgba(255, 255, 255, 0.4);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
-  margin-top: 4px;
   animation: chipDrop 0.3s ease-out;
   flex-shrink: 0;
 }
