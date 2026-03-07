@@ -8,13 +8,33 @@ import { useRef, useEffect, useCallback, useState, forwardRef, useImperativeHand
 import { Canvas, useFrame } from '@react-three/fiber';
 import { Environment, PerspectiveCamera, RoundedBox } from '@react-three/drei';
 import { EffectComposer, Vignette, SMAA } from '@react-three/postprocessing';
-import { Physics, RigidBody, CuboidCollider } from '@react-three/rapier';
+import { Physics, RigidBody, CuboidCollider, RoundCuboidCollider } from '@react-three/rapier';
 import type { RapierRigidBody } from '@react-three/rapier';
 import * as THREE from 'three';
+import { createNoise3D } from 'simplex-noise';
 import type { DieValue, DiceOutcome, DiceTotal } from '../engine/types';
 
 // Preload Rapier WASM so it's ready when Physics mounts
 import('@dimforge/rapier3d-compat').then(r => r.init()).catch(() => {});
+
+// Simplex noise generator for organic floor vibration modulation
+const noise3D = createNoise3D();
+
+// Floor oscillation constants — derived from physics math (see plan)
+// Peak velocity = AMPLITUDE × FREQ × 2π ≈ 0.028 × 8 × 6.28 ≈ 1.41 m/s
+// With restitution 0.5, max hop ≈ 0.15 units (~25% die size)
+const FLOOR_AMPLITUDE = 0.028;       // max floor displacement (units)
+const FREQ_PRIMARY = 8;              // Hz — main bounce frequency
+const FREQ_SECONDARY = 13;           // Hz — harmonic for organic feel
+const FLOOR_NOISE_SCALE = 0.4;       // simplex noise modulation amplitude
+
+/** Returns the floor Y offset at time t — multi-frequency oscillation + noise */
+function floorY(t: number): number {
+  const primary = Math.sin(t * FREQ_PRIMARY * 2 * Math.PI) * FLOOR_AMPLITUDE;
+  const secondary = Math.sin(t * FREQ_SECONDARY * 2 * Math.PI) * FLOOR_AMPLITUDE * 0.4;
+  const noiseModulation = noise3D(0, 0, t * 1.5) * FLOOR_NOISE_SCALE * FLOOR_AMPLITUDE;
+  return primary + secondary + noiseModulation;
+}
 
 // -- Constants --
 const DOME_RADIUS = 2.0;
@@ -26,6 +46,7 @@ const MIN_ROLL_TIME = 0.8;
 const MAX_ROLL_TIME = 6.0;  // total wall-clock failsafe (includes jiggle + airborne)
 const WALL_RESTITUTION = 0.15;
 const PLAY_RADIUS = DOME_RADIUS * 0.50;  // cylindrical wall radius — keeps dice centered
+const BUBBLE_RADIUS = PLAY_RADIUS + DIE_SIZE * 0.75;  // visual cylinder — wide enough to contain dice edges
 const CYLINDER_HEIGHT = 3.5;              // flat ceiling height — tall like real bubble craps
 
 // Pip geometry constants
@@ -33,14 +54,20 @@ const PIP_RADIUS = DIE_SIZE * 0.075;
 const PIP_DEPTH = 0.024;
 const PIP_OFFSET = DIE_SIZE * 0.15;
 
-// Bubble craps roll phases
-const JIGGLE_DURATION = 0.65;      // scale-up (0.4s) + pause (0.25s) before pop
-const JIGGLE_IMPULSE = 0.015;      // strength of jiggle impulses per frame
-const JIGGLE_ANGULAR = 8.0;        // angular jiggle intensity
-const POP_VELOCITY_MIN = 14;       // minimum upward pop velocity
-const POP_VELOCITY_RANGE = 6;      // random range added to min (14-20)
-const POP_ANGULAR = 35;            // angular velocity on pop
-const POP_SPREAD = 4.0;            // horizontal spread force on pop
+// Bubble craps roll phases — patent-informed: POP first, then JIGGLE
+// Real machine: sharp VCM pop launches dice, they fall back, then floor vibrates ~3s
+const JIGGLE_DURATION = 3.0;         // rumble duration — matches real machine (~3s)
+const JIGGLE_MAX_SPEED = 4.0;        // total velocity safety clamp during jiggle
+const JIGGLE_MAX_ANGULAR = 8.0;      // angular velocity clamp during jiggle
+// Pop physics: v = sqrt(2*g*h), g=15
+// Soft pop: v≈4.0 → h≈0.53 units.  Hard pop: v≈7.2 → h≈1.73 units.
+const POP_VELOCITY_MIN = 4.0;      // softest pop → ~0.5 units high
+const POP_VELOCITY_RANGE = 3.2;    // random range (4.0-7.2 → 0.5-1.75 units high)
+const POP_ANGULAR = 18;            // angular velocity on pop — tumble in the air
+const POP_SPREAD = 1.5;            // horizontal spread so dice separate during pop
+const POP_LAND_Y = DIE_SIZE * 1.5; // dice considered "landed" when below this height
+const POP_LAND_SPEED = 2.0;        // and total speed below this
+const POP_MAX_TIME = 2.5;          // failsafe — force transition to jiggle after this
 
 // Camera animation phases & positions
 type CameraPhase = 'idle' | 'dramatic' | 'airborne' | 'settling' | 'topdown' | 'shrinking';
@@ -175,7 +202,7 @@ function DieMesh() {
     <group>
       <RoundedBox
         args={[DIE_SIZE, DIE_SIZE, DIE_SIZE]}
-        radius={0.04}
+        radius={0.08}
         smoothness={4}
         castShadow
         receiveShadow
@@ -198,13 +225,48 @@ function DieMesh() {
   );
 }
 
-/** Visual-only scene geometry (floor + base ring) */
+/** Visual-only scene geometry (floor + glass bubble enclosure) */
 function SceneGeometry() {
   return (
     <group>
+      {/* Green felt floor — sized to match cylinder base */}
       <mesh position={[0, FLOOR_Y - 0.01, 0]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
-        <circleGeometry args={[DOME_RADIUS, 64]} />
+        <circleGeometry args={[BUBBLE_RADIUS + 0.05, 64]} />
         <meshStandardMaterial color={0x1a6b2e} roughness={0.85} metalness={0.0} />
+      </mesh>
+
+      {/* Bubble enclosure — cylinder wall (open-ended tube) */}
+      <mesh position={[0, CYLINDER_HEIGHT / 2, 0]}>
+        <cylinderGeometry args={[BUBBLE_RADIUS, BUBBLE_RADIUS, CYLINDER_HEIGHT, 64, 1, true]} />
+        <meshPhysicalMaterial
+          color="#a8d8ea"
+          opacity={0.12}
+          roughness={0.1}
+          metalness={0.1}
+          clearcoat={1.0}
+          clearcoatRoughness={0.05}
+          envMapIntensity={1.2}
+          transparent
+          depthWrite={false}
+          side={THREE.DoubleSide}
+        />
+      </mesh>
+
+      {/* Bubble enclosure — top cap */}
+      <mesh position={[0, CYLINDER_HEIGHT, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+        <circleGeometry args={[BUBBLE_RADIUS, 64]} />
+        <meshPhysicalMaterial
+          color="#a8d8ea"
+          opacity={0.06}
+          roughness={0.1}
+          metalness={0.1}
+          clearcoat={1.0}
+          clearcoatRoughness={0.05}
+          envMapIntensity={0.8}
+          transparent
+          depthWrite={false}
+          side={THREE.DoubleSide}
+        />
       </mesh>
     </group>
   );
@@ -424,33 +486,51 @@ interface DiceSimulationProps {
 function DicePhysicsScene({ rolling, onRollingChange, onPendingResult, onCameraPhaseChange, effectsData }: DiceSimulationProps) {
   const die1Ref = useRef<RapierRigidBody>(null);
   const die2Ref = useRef<RapierRigidBody>(null);
+  const floorRef = useRef<RapierRigidBody>(null);
   const settleCounter = useRef(0);
   const rollTime = useRef(0);
   const rollStartWallTime = useRef(0);
   const isRolling = useRef(false);
-  const rollPhase = useRef<'idle' | 'jiggle' | 'airborne'>('idle');
-  const jiggleStartTime = useRef(0);
+  const rollPhase = useRef<'idle' | 'pop' | 'jiggle' | 'airborne'>('idle');
+  const phaseStartTime = useRef(0);
   const prevVelY = useRef([0, 0]);
   const settlingSignaled = useRef(false);
 
-  // Start roll — place dice on floor, begin jiggle phase (mimics real bubble craps)
+  // Start roll — POP immediately, then jiggle after dice land (real bubble craps order)
   useEffect(() => {
     if (rolling && !isRolling.current && die1Ref.current && die2Ref.current) {
       isRolling.current = true;
-      rollPhase.current = 'jiggle';
-      jiggleStartTime.current = performance.now();
+      rollPhase.current = 'pop';
+      phaseStartTime.current = performance.now();
       settleCounter.current = 0;
       settlingSignaled.current = false;
       rollTime.current = 0;
       rollStartWallTime.current = performance.now();
       prevVelY.current = [0, 0];
 
-      // Dice stay where they rested — just zero velocity before jiggle
+      // Random pop strength for this roll — each roll feels different
+      const popStrength = POP_VELOCITY_MIN + Math.random() * POP_VELOCITY_RANGE;
+      // Scale angular velocity and spread with pop strength for realism
+      const strengthRatio = popStrength / (POP_VELOCITY_MIN + POP_VELOCITY_RANGE);
+
       const refs = [die1Ref.current, die2Ref.current];
       for (let i = 0; i < 2; i++) {
         const rb = refs[i]!;
-        rb.setLinvel({ x: 0, y: 0, z: 0 }, true);
-        rb.setAngvel({ x: 0, y: 0, z: 0 }, true);
+        rb.setLinearDamping(0.2);
+        rb.setAngularDamping(0.15);
+
+        // Sharp upward pop — same strength for both dice (they're on the same platform)
+        // but slightly different spread/spin for visual variety
+        const spreadX = (Math.random() - 0.5) * POP_SPREAD * strengthRatio;
+        const spreadZ = (Math.random() - 0.5) * POP_SPREAD * strengthRatio;
+        rb.setLinvel({ x: spreadX, y: popStrength, z: spreadZ }, true);
+
+        // Random angular velocity — scaled with pop strength
+        rb.setAngvel({
+          x: (Math.random() - 0.5) * POP_ANGULAR * strengthRatio,
+          y: (Math.random() - 0.5) * POP_ANGULAR * 0.5 * strengthRatio,
+          z: (Math.random() - 0.5) * POP_ANGULAR * strengthRatio,
+        }, true);
         rb.wakeUp();
       }
     }
@@ -460,56 +540,150 @@ function DicePhysicsScene({ rolling, onRollingChange, onPendingResult, onCameraP
   const settleRef = useRef({ onPendingResult, onRollingChange, onCameraPhaseChange });
   settleRef.current = { onPendingResult, onRollingChange, onCameraPhaseChange };
 
-  // Post-step: jiggle → pop → dome constraints → settle detection
+  // Post-step: pop → jiggle → dome constraints → settle detection
   useFrame((_, delta) => {
     if (!die1Ref.current || !die2Ref.current) return;
     if (!isRolling.current) return;
 
     const refs = [die1Ref.current, die2Ref.current];
 
-    // ── Phase 1: JIGGLE — dice vibrate on the floor ──
-    if (rollPhase.current === 'jiggle') {
-      const jiggleElapsed = (performance.now() - jiggleStartTime.current) / 1000;
+    // ── Phase 1: POP — dice are in the air after initial launch ──
+    if (rollPhase.current === 'pop') {
+      const popElapsed = (performance.now() - phaseStartTime.current) / 1000;
 
-      if (jiggleElapsed < JIGGLE_DURATION) {
-        // Apply rapid random micro-impulses to simulate vibration
-        for (let i = 0; i < 2; i++) {
-          const rb = refs[i]!;
-          rb.applyImpulse({
-            x: (Math.random() - 0.5) * JIGGLE_IMPULSE,
-            y: Math.random() * JIGGLE_IMPULSE * 0.5,  // tiny upward hops
-            z: (Math.random() - 0.5) * JIGGLE_IMPULSE,
-          }, true);
-          rb.setAngvel({
-            x: (Math.random() - 0.5) * JIGGLE_ANGULAR,
-            y: (Math.random() - 0.5) * JIGGLE_ANGULAR,
-            z: (Math.random() - 0.5) * JIGGLE_ANGULAR,
-          }, true);
-        }
-        return; // Don't do dome constraints or settle detection during jiggle
+      // Switch camera to airborne to track dice in the air
+      if (popElapsed > 0.15) {
+        settleRef.current.onCameraPhaseChange('airborne');
       }
 
-      // ── Transition: POP — blast dice into the air ──
-      rollPhase.current = 'airborne';
-      rollTime.current = 0;  // reset for settle detection (MIN_ROLL_TIME counts from pop)
-      rollStartWallTime.current = performance.now();  // reset failsafe from pop
-      settleRef.current.onCameraPhaseChange('airborne');
-
+      // Dome constraints during pop (walls + ceiling)
       for (let i = 0; i < 2; i++) {
         const rb = refs[i]!;
-        const side = i === 0 ? -1 : 1;
-        const popY = POP_VELOCITY_MIN + Math.random() * POP_VELOCITY_RANGE;
-        rb.setLinvel({
-          x: side * POP_SPREAD * (0.5 + Math.random() * 0.5) + (Math.random() - 0.5) * 1.0,
-          y: popY,
-          z: (Math.random() - 0.5) * POP_SPREAD,
-        }, true);
-        rb.setAngvel({
-          x: (Math.random() - 0.5) * POP_ANGULAR,
-          y: (Math.random() - 0.5) * POP_ANGULAR,
-          z: (Math.random() - 0.5) * POP_ANGULAR,
-        }, true);
+        const pos = rb.translation();
+
+        // Cylinder boundary — vertical walls
+        const hDist = Math.sqrt(pos.x * pos.x + pos.z * pos.z);
+        if (hDist > PLAY_RADIUS) {
+          const hScale = PLAY_RADIUS / hDist;
+          rb.setTranslation({ x: pos.x * hScale, y: pos.y, z: pos.z * hScale }, true);
+          const vel = rb.linvel();
+          const nx = pos.x / hDist, nz = pos.z / hDist;
+          const vdn = vel.x * nx + vel.z * nz;
+          if (vdn > 0) {
+            rb.setLinvel({
+              x: (vel.x - 2 * vdn * nx) * WALL_RESTITUTION,
+              y: vel.y,
+              z: (vel.z - 2 * vdn * nz) * WALL_RESTITUTION,
+            }, true);
+            const av = rb.angvel();
+            rb.setAngvel({ x: av.x * 0.5, y: av.y * 0.5, z: av.z * 0.5 }, true);
+          }
+        }
+
+        // Flat ceiling
+        if (pos.y > CYLINDER_HEIGHT) {
+          rb.setTranslation({ x: pos.x, y: CYLINDER_HEIGHT, z: pos.z }, true);
+          const vel = rb.linvel();
+          if (vel.y > 0) {
+            rb.setLinvel({ x: vel.x * WALL_RESTITUTION, y: -vel.y * WALL_RESTITUTION, z: vel.z * WALL_RESTITUTION }, true);
+            const av = rb.angvel();
+            rb.setAngvel({ x: av.x * 0.5, y: av.y * 0.5, z: av.z * 0.5 }, true);
+          }
+        }
       }
+
+      // Check if dice have landed — both near floor and slowing down, or max time elapsed
+      let bothLanded = true;
+      for (const rb of refs) {
+        const pos = rb.translation();
+        const vel = rb.linvel();
+        const speed = Math.sqrt(vel.x * vel.x + vel.y * vel.y + vel.z * vel.z);
+        if (pos.y > POP_LAND_Y || speed > POP_LAND_SPEED) {
+          bothLanded = false;
+          break;
+        }
+      }
+
+      if (bothLanded || popElapsed > POP_MAX_TIME) {
+        // ── Transition to JIGGLE — start vibrating floor ──
+        rollPhase.current = 'jiggle';
+        phaseStartTime.current = performance.now();
+        settleRef.current.onCameraPhaseChange('dramatic');
+
+        // Switch to jiggle damping
+        for (const rb of refs) {
+          rb.setLinearDamping(0.5);
+          rb.setAngularDamping(0.3);
+        }
+      }
+      return;
+    }
+
+    // ── Phase 2: JIGGLE — floor vibrates, dice tumble on surface ──
+    if (rollPhase.current === 'jiggle') {
+      const jiggleElapsed = (performance.now() - phaseStartTime.current) / 1000;
+
+      if (jiggleElapsed < JIGGLE_DURATION) {
+        const t = jiggleElapsed;
+
+        // Oscillate the floor — this is what makes dice bounce (Interblock patent approach)
+        if (floorRef.current) {
+          const y = floorY(t);
+          floorRef.current.setNextKinematicTranslation({ x: 0, y: y - 0.01, z: 0 });
+        }
+
+        // Boundary enforcement only — NO forces applied to dice
+        for (let i = 0; i < 2; i++) {
+          const rb = refs[i]!;
+          const pos = rb.translation();
+
+          // Keep dice inside cylinder
+          const hDist = Math.sqrt(pos.x * pos.x + pos.z * pos.z);
+          if (hDist > PLAY_RADIUS) {
+            const hScale = PLAY_RADIUS / hDist;
+            rb.setTranslation({ x: pos.x * hScale, y: pos.y, z: pos.z * hScale }, true);
+            const vel = rb.linvel();
+            const nx = pos.x / hDist, nz = pos.z / hDist;
+            const vdn = vel.x * nx + vel.z * nz;
+            if (vdn > 0) {
+              rb.setLinvel({
+                x: (vel.x - 2 * vdn * nx) * WALL_RESTITUTION,
+                y: vel.y,
+                z: (vel.z - 2 * vdn * nz) * WALL_RESTITUTION,
+              }, true);
+            }
+          }
+
+          // Safety: cap total velocity
+          const vel = rb.linvel();
+          const speed = Math.sqrt(vel.x * vel.x + vel.y * vel.y + vel.z * vel.z);
+          if (speed > JIGGLE_MAX_SPEED) {
+            const s = JIGGLE_MAX_SPEED / speed;
+            rb.setLinvel({ x: vel.x * s, y: vel.y * s, z: vel.z * s }, true);
+          }
+          const av = rb.angvel();
+          const angSpeed = Math.sqrt(av.x * av.x + av.y * av.y + av.z * av.z);
+          if (angSpeed > JIGGLE_MAX_ANGULAR) {
+            const s = JIGGLE_MAX_ANGULAR / angSpeed;
+            rb.setAngvel({ x: av.x * s, y: av.y * s, z: av.z * s }, true);
+          }
+        }
+        return;
+      }
+
+      // ── Jiggle done — reset floor, restore damping, begin settle detection ──
+      // Dice stay on the floor and settle naturally — no more launching
+      if (floorRef.current) {
+        floorRef.current.setNextKinematicTranslation({ x: 0, y: -0.01, z: 0 });
+      }
+      rollPhase.current = 'airborne'; // reuse airborne phase for settle detection logic
+      rollTime.current = 0;
+      rollStartWallTime.current = performance.now();
+      for (const rb of refs) {
+        rb.setLinearDamping(0.2);
+        rb.setAngularDamping(0.15);
+      }
+      // Camera already in 'settling' from pop→jiggle transition — no change needed
       return;
     }
 
@@ -621,8 +795,8 @@ function DicePhysicsScene({ rolling, onRollingChange, onPendingResult, onCameraP
 
   return (
     <>
-      {/* Floor — fixed rigid body */}
-      <RigidBody type="fixed" restitution={0.5} friction={0.8}>
+      {/* Floor — kinematic rigid body that vibrates during jiggle phase */}
+      <RigidBody ref={floorRef} type="kinematicPosition" restitution={0.5} friction={0.8}>
         <CuboidCollider args={[DOME_RADIUS, 0.01, DOME_RADIUS]} position={[0, -0.01, 0]} />
       </RigidBody>
 
@@ -637,7 +811,7 @@ function DicePhysicsScene({ rolling, onRollingChange, onPendingResult, onCameraP
         mass={0.05}
         position={[-0.4, FLOOR_Y + DIE_SIZE / 2, 0]}
       >
-        <CuboidCollider args={[DIE_SIZE / 2, DIE_SIZE / 2, DIE_SIZE / 2]} />
+        <RoundCuboidCollider args={[0.22, 0.22, 0.22, 0.08]} />
         <DieMesh />
       </RigidBody>
 
@@ -652,7 +826,7 @@ function DicePhysicsScene({ rolling, onRollingChange, onPendingResult, onCameraP
         mass={0.05}
         position={[0.4, FLOOR_Y + DIE_SIZE / 2, 0]}
       >
-        <CuboidCollider args={[DIE_SIZE / 2, DIE_SIZE / 2, DIE_SIZE / 2]} />
+        <RoundCuboidCollider args={[0.22, 0.22, 0.22, 0.08]} />
         <DieMesh />
       </RigidBody>
     </>
